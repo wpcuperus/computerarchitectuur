@@ -201,5 +201,97 @@ function generateWeek3Questions() {
     });
   }
 
+    // Vraag 3: 4-naar-1 Multiplexor (selectorwaarden A/S1 en B/S2)
+  {
+    // Genereer inputwaarden I0 t/m I3 willekeurig (0 of 1)
+    const inputs = [];
+    for (let i = 0; i < 4; i++) {
+      inputs.push(rng() < 0.5 ? 0 : 1);
+    }
+
+    // truthTable is output Y per selector (A,B)
+    // selector: 00 -> I0, 01 -> I1, 10 -> I2, 11 -> I3
+    const truthTable = [];
+    for (let A = 0; A <= 1; A++) {
+      for (let B = 0; B <= 1; B++) {
+        const sel = (A << 1) | B; // selector index 0..3
+        truthTable.push(inputs[sel]);
+      }
+    }
+
+    const html = `
+    <p>Een 4-naar-1 multiplexor heeft 2 selectorwaarden <strong>A (S1)</strong> en <strong>B (S2)</strong> en 4 inputwaarden I0, I1, I2, I3.</p>
+
+    <img src="assets/multiplexor.png" style="width: 180px; height: 200px;" alt="4-naar-1 Multiplexor" />
+
+    <p>De inputwaarden zijn als volgt gegeven (constant):</p>
+    <ul>
+      <li>I0 = ${inputs[0]}</li>
+      <li>I1 = ${inputs[1]}</li>
+      <li>I2 = ${inputs[2]}</li>
+      <li>I3 = ${inputs[3]}</li>
+    </ul>
+    <p>Vul voor elke combinatie van selectorwaarden A en B de uitgang <strong>Y</strong> in:</p>
+
+    <table border="1" cellpadding="5" style="font-family: monospace;">
+      <tr><th>A (S1)</th><th>B (S2)</th><th>Y</th></tr>
+      <tr><td>0</td><td>0</td><td>[ ]</td></tr>
+      <tr><td>0</td><td>1</td><td>[ ]</td></tr>
+      <tr><td>1</td><td>0</td><td>[ ]</td></tr>
+      <tr><td>1</td><td>1</td><td>[ ]</td></tr>
+    </table>
+    `;
+
+    // Het correcte antwoord is de string van de 4 outputwaarden (Y's)
+    const answer = truthTable.join('');
+
+    questions.push({
+      label: html,
+      answer: answer,
+      correctAnswers: [answer]
+    });
+  }
+
+// Vraag 4: Geheugenschakeling met vaste waarden (altijd antwoord 1011)
+{
+  const rows = [
+    { Din: 0, Write: 0, Duit: 1, C: 0, D: 0, F: "1 (hold)", E: "0 (hold)" },
+    { Din: 0, Write: 1, Duit: 0, C: 0, D: 1, F: "0", E: "1" },
+    { Din: 1, Write: 0, Duit: 1, C: 0, D: 0, F: "1 (hold)", E: "0 (hold)" },
+    { Din: 1, Write: 1, Duit: 1, C: 1, D: 0, F: "1", E: "0" }
+  ];
+
+  const html = `
+<p>Gegeven de onderstaande schakeling, waarbij <strong>E = 0</strong> en <strong>F = 1</strong> de startwaarden zijn.</p>
+
+<img src="assets/srlatch.png" alt="SR Latch Schakeling" style="width: 100%; max-width: 600px;">
+
+<p>Vul de waarde van <strong>Duit</strong> in per stap. Geef het uiteindelijke antwoord door de Duit-waarden achter elkaar te plakken van boven naar beneden.</p>
+
+<table border="1" cellpadding="5" style="font-family: monospace;">
+  <tr><th>Din</th><th>Write</th><th>Duit</th><th>C</th><th>D</th><th>F</th><th>E</th></tr>
+  ${rows.map(r => `
+    <tr>
+      <td>${r.Din}</td>
+      <td>${r.Write}</td>
+      <td>[ ]</td>
+      <td>${r.C}</td>
+      <td>${r.D}</td>
+      <td>${r.F}</td>
+      <td>${r.E}</td>
+    </tr>
+  `).join('\n')}
+</table>
+`;
+
+  const answer = rows.map(r => r.Duit).join('');
+
+  questions.push({
+    label: html,
+    answer: answer,
+    correctAnswers: [answer]
+  });
+}
+
   return questions;
 }
