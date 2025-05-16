@@ -161,7 +161,7 @@ questions.push({
 
 const floatStr = floatVal.toString();
 questions.push({
-  label: `Converteer het volgende IEEE 754 (single-precision binary) floating-point getal naar een zo kort mogelijk decimaal getal:\n${binary}\n(Je mag een punt of komma als decimaalteken gebruiken)`,
+  label: `Converteer het volgende IEEE 754 (single-precision binary) floating-point getal naar een zo kort mogelijk decimaal getal:<br>${binary}<br>(Je mag een punt of komma als decimaalteken gebruiken)`,
   answer: floatStr,
   correctAnswers: [floatStr, floatStr.replace('.', ',')]
 });

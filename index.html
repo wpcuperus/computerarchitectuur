@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kies Oefentoetsen</title>
+  <title>Computerarchitectuur</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main>
-    <h1>Kies de Oefentoetsen</h1>
+    <h1>Kies de onderwerpen</h1>
     <form id="subject-form">
+      <label>
+        <input type="checkbox" id="selectAll" />
+        Alles selecteren
+      </label><br>
       <label>
         <input type="checkbox" name="week1" id="week1" />
         Week 1: Intro en Talstelsels
@@ -22,6 +26,10 @@
             <input type="checkbox" name="week2theorie" id="week2theorie" />
             Week 2: Geheugenrepresentatie (theorie)
         </label><br>
+        <label>
+            <input type="checkbox" name="week3" id="week3" />
+            Week 3: Logische schakelingen (theorie)
+        </label><br><br>
 
       <button type="submit">Genereer Oefentoets</button>
     </form>
