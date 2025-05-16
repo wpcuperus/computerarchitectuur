@@ -72,9 +72,11 @@ function generateQuiz() {
   const div = document.createElement('div');
   div.className = 'question';
   div.innerHTML = `
-      <label for="q${index}"><strong>Vraag ${index + 1}:</strong> ${q.label}</label><br>
-      <input type="text" id="q${index}" />
+    <label for="q${index}"><strong>Vraag ${index + 1}:</strong> ${q.label}</label><br>
+    <input type="text" id="q${index}" />
+    <div class="feedback" id="feedback-${index}" style="min-height: 2em; margin-top: 5px;"></div>
   `;
+
   container.appendChild(div);
   });
 }
@@ -89,12 +91,7 @@ function checkAnswers() {
     const parentDiv = inputField.parentElement;
 
     // Verwijder oude feedback indien aanwezig
-    const oldFeedback = parentDiv.querySelector('.feedback');
-    if (oldFeedback) oldFeedback.remove();
-
-    const feedback = document.createElement('div');
-    feedback.className = 'feedback';
-    feedback.style.marginTop = '5px';
+    const feedback = document.getElementById(`feedback-${index}`);
 
     let isCorrect = false;
 
@@ -174,3 +171,4 @@ window.onload = () => {
   selectedWeeks = weeks;
   generateQuiz();
 };
+

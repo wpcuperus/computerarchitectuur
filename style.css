@@ -30,4 +30,9 @@ input {
 
 .feedback {
   font-weight: bold;
+  min-height: 5em; /* of meer, afhankelijk van je score-output */
+}
+
+#score {
+  min-height: 2em; /* of meer, afhankelijk van je score-output */
 }
