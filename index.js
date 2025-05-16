@@ -34,6 +34,7 @@ function generateSeed(selectedWeeks) {
     if (week === 'week4') weekFlags |= 1 << 3; // Week 4
     if (week === 'week5') weekFlags |= 1 << 4; // Week 5
     if (week === 'week6') weekFlags |= 1 << 5; // Week 6
+    if (week === 'week2theorie') weekFlags |= 1 << 6; // Bijvoorbeeld bit 6 voor week2theorie
   });
 
   // Combineer de basis seed met de weekFlags (waarbij de weekinformatie wordt gecodeerd)

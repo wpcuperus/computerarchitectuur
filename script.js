@@ -13,11 +13,12 @@ function getQueryParams() {
 
   // Decodeer de weekinformatie
   const weeks = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 7; i++) {  // nu 7 bits i.p.v. 6
     if (weekFlags & (1 << i)) {
-      weeks.push(`week${i + 1}`);
+      weeks.push(`week${i === 6 ? '2theorie' : i + 1}`);
     }
   }
+
 
   return { seed: baseSeed, weeks };
 }
@@ -46,6 +47,9 @@ function generateQuiz() {
   }
   if (selectedWeeks.includes('week2')) {
     questions = questions.concat(generateWeek2Questions()); // Voeg week 2 vragen toe
+  }
+  if (selectedWeeks.includes('week2theorie')) {
+    questions = questions.concat(generateWeek2TheoryQuestions());
   }
   if (selectedWeeks.includes('week3')) {
     questions = questions.concat(generateWeek3Questions()); // Voeg week 3 vragen toe
@@ -94,29 +98,33 @@ function checkAnswers() {
 
     let isCorrect = false;
 
-    // Voor vragen met binaryAnswer (week2)
     if (q.binaryAnswer !== undefined) {
+      // Binary answer exact match
       isCorrect = userInput === q.binaryAnswer;
+    } else if (Array.isArray(q.correctAnswers)) {
+      // Meerdere mogelijke correcte antwoorden
+      isCorrect = q.correctAnswers.some(correct => correct.toLowerCase() === userInput.toLowerCase());
     } else {
-      // Voor week1 (of andere) vragen die geen binaryAnswer gebruiken
-      isCorrect = userInput === q.answer.toString();
+      // Enkelvoudig correct antwoord
+      isCorrect = userInput.toLowerCase() === q.answer.toString().toLowerCase();
     }
 
     if (isCorrect) {
       feedback.style.color = 'green';
       feedback.textContent = '✔️ Correct beantwoord';
+      score++;
     } else {
       feedback.style.color = 'red';
-      const correctAnswer = q.binaryAnswer !== undefined ? q.binaryAnswer : q.answer;
+      const correctAnswer = q.binaryAnswer !== undefined ? q.binaryAnswer : (Array.isArray(q.correctAnswers) ? q.correctAnswers.join(' / ') : q.answer);
       feedback.innerHTML = `❌ Fout. Het juiste antwoord is: ${correctAnswer}<br>${q.explanation || ''}`;
     }
-
 
     parentDiv.appendChild(feedback);
   });
 
   document.getElementById('score').textContent = `Je score: ${score} van de ${currentQuestions.length}`;
 }
+
 
 
 

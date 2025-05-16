@@ -29,6 +29,8 @@ function generateWeek2Questions() {
     return [a, b];
   }
 
+  
+
   // Vraag: Optellen in two's complement 4 bits
   {
     const [a, b] = getRandomTwosComplementPair(4);
@@ -76,6 +78,96 @@ function generateWeek2Questions() {
       binaryAnswer
     });
   }
+
+// Vraag: Hex naar IEEE 754 float (beperkt bereik en precisie)
+{
+  const buffer = new ArrayBuffer(4);
+  const view = new DataView(buffer);
+
+  // Genereer een geheel deel tussen -16 en 16
+  const intPart = Math.floor(rng() * 33) - 16;
+
+  // Genereer een fractioneel deel van 0/16 tot 15/16
+  const fractionSteps = Math.floor(rng() * 16); // 0–15
+  const fracPart = fractionSteps / 16;
+
+  const floatVal = (intPart + fracPart).toFixed(6);
+  view.setFloat32(0, parseFloat(floatVal), false); // big endian
+  const hex = [...Array(4)]
+    .map((_, i) => view.getUint8(i).toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+
+const correctFloat = parseFloat(floatVal).toString();
+questions.push({
+  label: `Welk decimaal getal hoort bij het IEEE 754 hexadecimale getal 0x${hex}? (Je mag een punt of komma als decimaalteken gebruiken)`,
+  answer: correctFloat,
+  correctAnswers: [correctFloat, correctFloat.replace('.', ',')]
+});
+
+}
+
+
+// Vraag: IEEE 754 float naar hex (beperkt bereik en precisie)
+{
+  const buffer = new ArrayBuffer(4);
+  const view = new DataView(buffer);
+
+  // Genereer een geheel getal tussen -16 en 16
+  const intPart = Math.floor(rng() * 33) - 16; // [-16, 16]
+
+  // Genereer een fractioneel deel als veelvoud van 1/16 (0 tot 15/16)
+  const fractionSteps = Math.floor(rng() * 16); // 0–15
+  const fracPart = fractionSteps / 16;
+
+  // Combineer
+  const floatVal = (intPart + fracPart).toFixed(6); // 6 decimalen voor consistentie
+  view.setFloat32(0, parseFloat(floatVal), false); // big endian
+  const hex = [...Array(4)]
+    .map((_, i) => view.getUint8(i).toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+
+const hexStr = hex.toUpperCase();
+questions.push({
+  label: `Wat is de IEEE 754 (32-bit single precision) hexadecimale representatie van ${floatVal}? (Je mag het antwoord met of zonder "0x" prefix geven)`,
+  answer: `0x${hexStr}`,
+  correctAnswers: [`0x${hexStr}`, hexStr]
+});
+
+}
+
+// Vraag: IEEE 754 binaire string naar decimaal (beperkt bereik en precisie)
+{
+  const buffer = new ArrayBuffer(4);
+  const view = new DataView(buffer);
+
+  // Genereer geheel deel tussen -16 en 16
+  const intPart = Math.floor(rng() * 33) - 16;
+
+  // Genereer fractioneel deel (max .1111)
+  const fractionSteps = Math.floor(rng() * 16); // 0–15
+  const fracPart = fractionSteps / 16;
+
+  const floatVal = intPart + fracPart;
+
+  // Zet als IEEE 754 32-bit float (big endian)
+  view.setFloat32(0, floatVal, false);
+
+  // Haal 32-bit binaire representatie op
+  const binary = [...Array(4)]
+    .map((_, i) => view.getUint8(i).toString(2).padStart(8, '0'))
+    .join('');
+
+const floatStr = floatVal.toString();
+questions.push({
+  label: `Converteer het volgende IEEE 754 (single-precision binary) floating-point getal naar een zo kort mogelijk decimaal getal:\n${binary}\n(Je mag een punt of komma als decimaalteken gebruiken)`,
+  answer: floatStr,
+  correctAnswers: [floatStr, floatStr.replace('.', ',')]
+});
+
+}
+
 
   // Kies willekeurig of we 4 of 8 bits gebruiken
 const convBits = rng() < 0.5 ? 4 : 8;
