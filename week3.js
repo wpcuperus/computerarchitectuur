@@ -293,5 +293,160 @@ function generateWeek3Questions() {
   });
 }
 
+// Vraag 5: Controleer De Morgan – dynamisch gegenereerde expressies
+{
+  const baseExpressions = [
+    {
+      originalStr: "not (A + B)",
+      original: (a, b, c) => !(a || b),
+      correctStr: "not A * not B",
+      correct: (a, b, c) => !a && !b,
+      incorrectStr: "not A + not B",
+      incorrect: (a, b, c) => !a || !b,
+    },
+    {
+      originalStr: "not (A * B)",
+      original: (a, b, c) => !(a && b),
+      correctStr: "not A + not B",
+      correct: (a, b, c) => !a || !b,
+      incorrectStr: "not A * not B",
+      incorrect: (a, b, c) => !a && !b,
+    },
+    {
+      originalStr: "not (A + not(B * C))",
+      original: (a, b, c) => !(a || !(b && c)),
+      correctStr: "not A * B * C",
+      correct: (a, b, c) => !a && b && c,
+      incorrectStr: "not A + B + C",
+      incorrect: (a, b, c) => !a || b || c,
+    },
+    {
+      originalStr: "not (not A * not B)",
+      original: (a, b, c) => !(!a && !b),
+      correctStr: "A + B",
+      correct: (a, b, c) => a || b,
+      incorrectStr: "not A + not B",
+      incorrect: (a, b, c) => !a || !b,
+    },
+  ];
+
+  // Kies willekeurige expressie
+  const chosen = baseExpressions[Math.floor(rng() * baseExpressions.length)];
+  const isCorrect = rng() < 0.5;
+
+  const expr1 = chosen.original;
+  const expr2 = isCorrect ? chosen.correct : chosen.incorrect;
+  const exprStr2 = isCorrect ? chosen.correctStr : chosen.incorrectStr;
+
+  const truthTable1 = [];
+  const truthTable2 = [];
+
+  for (let a = 0; a <= 1; a++) {
+    for (let b = 0; b <= 1; b++) {
+      for (let c = 0; c <= 1; c++) {
+        truthTable1.push(expr1(a, b, c) ? 1 : 0);
+        truthTable2.push(expr2(a, b, c) ? 1 : 0);
+      }
+    }
+  }
+
+  const html = `
+<p>Iemand beweert dat, door gebruik te maken van de wetten van De Morgan, de expressie:</p>
+<pre>U = ${chosen.originalStr}</pre>
+<p>kan worden vereenvoudigd tot:</p>
+<pre>U = ${exprStr2}</pre>
+<p>Controleer deze bewering door de waarheidstabel van beide expressies met elkaar te vergelijken.</p>
+
+<table border="1" cellpadding="5" style="font-family: monospace;">
+  <tr><th>A</th><th>B</th><th>C</th><th>U1 (origineel)</th><th>U2 (vereenvoudigd)</th></tr>
+  ${Array.from({ length: 8 }, (_, i) => {
+    const a = (i & 4) >> 2;
+    const b = (i & 2) >> 1;
+    const c = i & 1;
+    return `<tr><td>${a}</td><td>${b}</td><td>${c}</td><td>[ ]</td><td>[ ]</td></tr>`;
+  }).join('\n')}
+</table>
+
+<p>Zijn de twee expressies altijd gelijk aan elkaar? <strong>Antwoord met: JA of NEE</strong></p>
+`;
+
+  const answer = isCorrect ? "JA" : "NEE";
+
+  questions.push({
+    label: html,
+    answer: answer,
+    correctAnswers: [answer]
+  });
+}
+
+// Vraag 6: Verkeerslicht met 2-naar-4 decoder
+{
+  const colors = ['rood', 'oranje', 'groen', 'blauw', 'geel', 'paars'];
+  // Kies 3 willekeurige kleuren
+  const shuffledColors = colors.sort(() => rng() - 0.5).slice(0, 3);
+
+  const [kleurX, kleurY, kleurZ] = shuffledColors;
+
+  // Mapping van decoder-uitgangen naar lampen:
+  // d0: OR -> kleurZ
+  // d1: OR -> kleurZ én kleurX
+  // d2: direct -> kleurY
+  // d3: OR -> kleurX
+
+  // Genereer geshuffelde inputvolgorde van 0,1,2,3
+  const inputSequence = [0,1,2,3].sort(() => rng() - 0.5);
+
+  // Laat ze een paar keer herhalen (bv. 2x)
+  const inputs = [...inputSequence];
+
+  // Bereken per input welke kleur brandt
+  const getKleur = (input) => {
+    switch (input) {
+      case 0: return kleurZ;              // d0
+      case 1: return `${kleurZ} en ${kleurX}`; // d1
+      case 2: return kleurY;              // d2
+      case 3: return kleurX;              // d3
+    }
+  };
+
+  const kleuren = inputs.map(getKleur);
+
+  const html = `
+<p>Beschouw onderstaande schakeling waarin een 2-4 decoder is opgenomen om drie lampen van een verkeerslicht aan te sturen. De lampen hebben de kleuren:</p>
+<ul>
+  <li><strong>Lamp X</strong>: ${kleurX}</li>
+  <li><strong>Lamp Y</strong>: ${kleurY}</li>
+  <li><strong>Lamp Z</strong>: ${kleurZ}</li>
+</ul>
+
+<img src="assets/verkeerslicht.png" alt="Verkeerslicht schakeling" style="width: 500px; height: auto;" />
+
+<p>De inputs <code>i0</code> en <code>i1</code> nemen achtereenvolgens de volgende waarden aan (in binair):</p>
+<p><code>${inputs.map(i => i.toString(2).padStart(2, '0')).join(', ')}</code></p>
+
+<p>Welke kleur(en) brandt telkens? Vul hieronder in:</p>
+
+<table border="1" cellpadding="5" style="font-family: monospace;">
+  <tr><th>i1i0</th><th>Kleur(en)</th></tr>
+  ${inputs.map((i, idx) => `
+    <tr>
+      <td>${i.toString(2).padStart(2, '0')}</td>
+      <td>[ ]</td>
+    </tr>`).join('')}
+</table>
+
+<p>Vul de antwoorden in volgens het format: kleur1, kleur2 en kleur3, kleur4, kleur5</p>
+`;
+
+  const answer = kleuren.join(', ');
+
+  questions.push({
+    label: html,
+    answer: answer,
+    correctAnswers: [answer]
+  });
+}
+
+
   return questions;
 }
