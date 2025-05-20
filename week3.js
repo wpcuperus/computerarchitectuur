@@ -447,6 +447,70 @@ function generateWeek3Questions() {
   });
 }
 
+{
+  const steps = 10;
+
+  // Vaste CLK (toggle per 2 stappen): 0 0 1 1 0 0 1 1 0 0
+  const clk = [];
+  for (let i = 0; i < steps; i++) {
+    clk.push(Math.floor(i / 2) % 2);
+  }
+
+  // Vaste X-volgorde
+  const x = [0, 1, 1, 1, 1, 0, 0, 0, 0, 1];
+
+  // Bereken Q op rising edges
+  const q = [];
+  let qState = 0;
+  for (let i = 0; i < steps; i++) {
+    const risingEdge = i > 0 && clk[i - 1] === 0 && clk[i] === 1;
+    if (risingEdge) qState = x[i];
+    q.push(qState);
+  }
+
+  // Bereken Z: Z = (Q <= X)
+  const z = q.map((qVal, i) => qVal <= x[i] ? 1 : 0);
+
+  // Willekeurig kiezen of Q of Z verborgen moet worden
+  const showQ = rng() > 0.5;
+
+  // Helperfunctie voor rij
+  const row = (label, arr, hidden) => {
+    return `<tr><td><strong>${label}</strong></td>${
+      arr.map(v => hidden ? `<td>[ ]</td>` : `<td>${v}</td>`).join('')
+    }</tr>`;
+  };
+
+  const html = `
+<p>In onderstaande schakeling is FF een flip-flop die van toestand verandert bij een <strong>rising edge</strong> van de klok-ingang. 
+Dit betekent: als de klok-ingang <code>CLK</code> van 0 naar 1 gaat, dan wordt Q gelijk aan D (= X).</p>
+
+<img src="assets/flipflop.png" alt="flipflop" style="width: 400px; height: auto;" />
+
+<p>De vergelijker “A ≤ B” heeft als output een “1” als A ≤ B, anders “0”.</p>
+
+<p>In onderstaande tabel is het tijdsverloop van CLK en X weergegeven. Vul de ontbrekende regel (${showQ ? "Q" : "Z"}) aan:</p>
+
+<table border="1" cellpadding="5" style="font-family: monospace; text-align: center;">
+  <tr><th>t</th>${[...Array(steps).keys()].map(i => `<th>${i}</th>`).join('')}</tr>
+  ${row("CLK", clk, false)}
+  ${row("X", x, false)}
+  ${row("Q", q, showQ)}
+  ${row("Z", z, !showQ)}
+</table>
+`;
+
+  const answer = (showQ ? q : z).join(",");
+
+  questions.push({
+    label: html,
+    answer: answer,
+    correctAnswers: [answer]
+  });
+}
+
+
+
 
   return questions;
 }
