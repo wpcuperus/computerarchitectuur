@@ -1,0 +1,196 @@
+let currentQuestions = [];
+let seed = null;
+let rng = null;
+let selectedWeeks = [];
+
+// Haal de seed en de geselecteerde weken op uit de URL
+function getQueryParams() {
+  const params = new URLSearchParams(window.location.search);
+  const seed = params.get('seed');
+
+  // De seed bevat zowel de basiswaarde als de weekinformatie
+  const [baseSeed, weekFlags] = seed.split('-').map(Number);
+
+  // Decodeer de weekinformatie
+  const weeks = [];
+  for (let i = 0; i < 7; i++) {  // nu 7 bits i.p.v. 6
+    if (weekFlags & (1 << i)) {
+      weeks.push(`week${i === 6 ? '2theorie' : i + 1}`);
+    }
+  }
+
+
+  return { seed: baseSeed, weeks };
+}
+
+// Deterministische RNG op basis van seed (Mulberry32)
+function mulberry32(a) {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+}
+
+// Genereer de vragen voor de geselecteerde weken
+function generateQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  document.getElementById('score').textContent = '';
+  document.getElementById('seed-info').textContent = `Toetscode (seed): ${seed}`;
+
+  // Voeg de vragen toe voor de geselecteerde weken
+  let questions = [];
+  if (selectedWeeks.includes('week1')) {
+    questions = questions.concat(generateWeek1Questions()); // Voeg week 1 vragen toe
+  }
+  if (selectedWeeks.includes('week2')) {
+    questions = questions.concat(generateWeek2Questions()); // Voeg week 2 vragen toe
+  }
+  if (selectedWeeks.includes('week2theorie')) {
+    questions = questions.concat(generateWeek2TheoryQuestions());
+  }
+  if (selectedWeeks.includes('week3')) {
+    questions = questions.concat(generateWeek3Questions()); // Voeg week 3 vragen toe
+  }
+  if (selectedWeeks.includes('week4')) {
+    questions = questions.concat(generateWeek4Questions()); // Voeg week 4 vragen toe
+  }
+  if (selectedWeeks.includes('week5')) {
+    questions = questions.concat(generateWeek5Questions()); // Voeg week 5 vragen toe
+  }
+  if (selectedWeeks.includes('week6')) {
+    questions = questions.concat(generateWeek6Questions()); // Voeg week 6 vragen toe
+  }
+
+  shuffleArray(questions);
+
+  currentQuestions = questions;
+  
+  currentQuestions.forEach((q, index) => {
+  const div = document.createElement('div');
+  div.className = 'question';
+  div.innerHTML = `
+    <label for="q${index}"><strong>Vraag ${index + 1}:</strong> ${q.label}</label><br>
+    <input type="text" id="q${index}" />
+    <div class="feedback" id="feedback-${index}" style="min-height: 2em; margin-top: 5px;"></div>
+  `;
+
+  container.appendChild(div);
+  });
+}
+
+// Controleer de gegeven antwoorden en geef feedback
+let scoreVisible = false;
+
+function checkAnswers() {
+  const scoreElement = document.getElementById('score');
+
+  // Toggle: als score al zichtbaar is, verberg alles en stop hier
+  if (scoreVisible) {
+    currentQuestions.forEach((_, index) => {
+      document.getElementById(`feedback-${index}`).textContent = '';
+    });
+    scoreElement.textContent = '';
+    scoreVisible = false;
+    return;
+  }
+
+  let score = 0;
+
+  currentQuestions.forEach((q, index) => {
+    const userInput = document.getElementById(`q${index}`).value.trim();
+    const inputField = document.getElementById(`q${index}`);
+    const parentDiv = inputField.parentElement;
+
+    const feedback = document.getElementById(`feedback-${index}`);
+    let isCorrect = false;
+
+    if (q.binaryAnswer !== undefined) {
+      isCorrect = userInput === q.binaryAnswer;
+    } else if (Array.isArray(q.correctAnswers)) {
+      isCorrect = q.correctAnswers.some(correct => correct.toLowerCase() === userInput.toLowerCase());
+    } else {
+      isCorrect = userInput.toLowerCase() === q.answer.toString().toLowerCase();
+    }
+
+    if (isCorrect) {
+      feedback.style.color = 'green';
+      feedback.textContent = '✔️ Correct beantwoord';
+      score++;
+    } else {
+      feedback.style.color = 'red';
+      const correctAnswer = q.binaryAnswer !== undefined ? q.binaryAnswer : (Array.isArray(q.correctAnswers) ? q.correctAnswers.join(' / ') : q.answer);
+      feedback.innerHTML = `❌ Fout. Het juiste antwoord is: ${correctAnswer}<br>${q.explanation || ''}`;
+    }
+
+    parentDiv.appendChild(feedback);
+  });
+
+  scoreElement.textContent = `Je score: ${score} van de ${currentQuestions.length}`;
+  scoreVisible = true;
+
+  // Scroll naar de score
+  scoreElement.scrollIntoView({ behavior: 'smooth' });
+}
+
+
+  document.getElementById('score').textContent = `Je score: ${score} van de ${currentQuestions.length}`;
+  scoreShown = true;
+
+  // Scroll naar de onderkant van de pagina
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: 'smooth'
+  });
+
+
+
+function regenerateQuiz() {
+  // Genereer een nieuwe seed (zonder de weken te veranderen)
+  const newSeed = Math.floor(Math.random() * 1_000_000);  // Nieuwe willekeurige seed
+
+  // Verkrijg de weekinformatie uit de huidige URL
+  const weekFlags = getWeekFlagsFromWeeks(selectedWeeks);  // Weekinformatie behouden
+
+  // Stel de nieuwe URL in met de nieuwe seed en dezelfde weekinformatie
+  window.location.search = `?seed=${newSeed}-${weekFlags}`;
+}
+
+// Functie om de weekinformatie om te zetten naar een bitstring (zoals in de seed-generatie)
+function getWeekFlagsFromWeeks(weeks) {
+  let weekFlags = 0;
+  weeks.forEach(week => {
+    if (week === 'week1') weekFlags |= 1 << 0;
+    if (week === 'week2') weekFlags |= 1 << 1;
+    if (week === 'week3') weekFlags |= 1 << 2;
+    if (week === 'week4') weekFlags |= 1 << 3;
+    if (week === 'week5') weekFlags |= 1 << 4;
+    if (week === 'week6') weekFlags |= 1 << 5;
+  });
+  return weekFlags;
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// Initializeer de pagina en zorg ervoor dat de seed correct wordt gebruikt
+window.onload = () => {
+  const { seed: urlSeed, weeks } = getQueryParams();
+  seed = parseInt(urlSeed) || Math.floor(Math.random() * 1_000_000);
+  rng = mulberry32(seed);
+
+  // Zet de seed in de URL als deze nog niet aanwezig is
+  if (!urlSeed) {
+    window.history.replaceState(null, '', `?seed=${seed}`);
+  }
+
+  selectedWeeks = weeks;
+  generateQuiz();
+};
+
