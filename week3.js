@@ -522,7 +522,6 @@ Dit betekent: als de klok-ingang <code>CLK</code> van 0 naar 1 gaat, dan wordt Q
 
 <p>Geef de waarde van de output <strong>Z</strong> op de tijdstippen A, B, C en D.</p>
 
-<p>Antwoordvorm: bijvoorbeeld <code>1,0,0,1</code> of <code>1001</code> of <code>A=1, B=0, C=0, D=1</code></p>
 `;
 
   const correctVariants = ['1001', '1, 0, 0, 1', 'A=1, B=0, C=0, D=1'];
