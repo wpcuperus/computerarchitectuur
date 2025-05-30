@@ -33,7 +33,8 @@ function generateWeek1Questions() {
     const hex = hexVal.toString(16).toUpperCase().padStart(4, '0');
     questions.push({
       label: `Zet het hexadecimale getal ${hex} om naar decimaal:`,
-      answer: parseInt(hex, 16)
+      answer: parseInt(hex, 16),
+      explanation: `Het hexadecimale getal ${hex} is gelijk aan ${parseInt(hex, 16)} in decimaal.`
     });
   }
 
@@ -41,7 +42,8 @@ function generateWeek1Questions() {
     const bin = getRandomNumber(2, 8, 255);
     questions.push({
       label: `Zet het binaire getal ${bin} om naar decimaal:`,
-      answer: parseInt(bin, 2)
+      answer: parseInt(bin, 2),
+      explanation: `Het binaire getal ${bin} is gelijk aan ${parseInt(bin, 2)} in decimaal.`
     });
   }
 
@@ -50,7 +52,8 @@ function generateWeek1Questions() {
     const oct = octVal.toString(8).padStart(3, '0');
     questions.push({
       label: `Zet het octale getal ${oct} om naar decimaal:`,
-      answer: parseInt(oct, 8)
+      answer: parseInt(oct, 8),
+      explanation: `Het octale getal ${oct} is gelijk aan ${parseInt(oct, 8)} in decimaal.`
     });
   }
 
@@ -59,7 +62,8 @@ function generateWeek1Questions() {
     const custom = getRandomNumber(base, 10, 500);
     questions.push({
       label: `Zet het getal ${custom} van het ${base}-tallige stelsel om naar decimaal:`,
-      answer: parseInt(custom, base)
+      answer: parseInt(custom, base),
+      explanation: `Het getal ${custom} in het ${base}-tallige stelsel is gelijk aan ${parseInt(custom, base)} in decimaal.`
     });
   }
 
@@ -68,7 +72,8 @@ function generateWeek1Questions() {
     const bin = getRandomNumber(2, 8, 255);
     questions.push({
       label: `Zet het binaire getal ${bin} om naar hexadecimaal:`,
-      answer: binaryToHex(bin)
+      answer: binaryToHex(bin),
+      explanation: `Het binaire getal ${bin} is gelijk aan ${parseInt(bin, 2)} in decimaal, wat ${binaryToHex(bin)} is in hexadecimaal.`
     });
   }
 
@@ -77,7 +82,8 @@ function generateWeek1Questions() {
     const oct = octVal.toString(8).padStart(3, '0');
     questions.push({
       label: `Zet het octale getal ${oct} om naar hexadecimaal:`,
-      answer: octToHex(oct)
+      answer: octToHex(oct),
+      explanation: `Het octale getal ${oct} is gelijk aan ${parseInt(oct, 8)} in decimaal, wat ${octToHex(oct)} is in hexadecimaal.`
     });
   }
 
@@ -85,7 +91,8 @@ function generateWeek1Questions() {
     const dec = getRandomNumber(10, 100, 999);
     questions.push({
       label: `Zet het decimale getal ${dec} om naar hexadecimaal:`,
-      answer: decimalToHex(dec)
+      answer: decimalToHex(dec),
+      explanation: `Het decimale getal ${dec} is gelijk aan ${decimalToHex(dec)} in hexadecimaal.`
     });
   }
 
@@ -96,6 +103,7 @@ function generateWeek1Questions() {
     questions.push({
       label: `Wat is ${bin1} × ${bin2} (binair)?`,
       answer: decimalToBinary(parseInt(bin1, 2) * parseInt(bin2, 2))
+      
     });
   }
 

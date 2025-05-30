@@ -134,6 +134,63 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
     });
   }
 
+  // Vraag 8 – Adreslijnen voor geheugengrootte
+  {
+    const sizeMB = Math.pow(2, Math.floor(rng() * 5) + 1); // 2, 4, 8, 16, 32 MB
+    const sizeBytes = sizeMB * 1024 * 1024;
+    const addressLines = Math.ceil(Math.log2(sizeBytes));
+
+    questions.push({
+      label: `Een geheugenkaart bevat ${sizeMB} MB geheugenadressen, hoeveel adreslijnen zijn nodig om dit geheugen te adresseren?`,
+      answer: `${addressLines}`,
+      explanation: `${sizeMB} MB = ${sizeBytes.toLocaleString()} bytes. Aantal bits om elk uniek adres aan te wijzen = log₂(${sizeBytes}) = ${addressLines} bits.`
+    });
+  }
+
+  // Vraag 9 – Videoframe (beperkt tot 4:3 of 16:9 resoluties tot 720p)
+  {
+    const resolutions = [
+      { width: 640, height: 480 },   // 4:3
+      { width: 800, height: 600 },   // 4:3
+      { width: 1024, height: 768 },  // 4:3
+      { width: 640, height: 360 },   // 16:9
+      { width: 854, height: 480 },   // 16:9
+      { width: 1280, height: 720 }   // 16:9
+    ];
+    const resIndex = Math.floor(rng() * resolutions.length);
+    const { width, height } = resolutions[resIndex];
+
+    const numColors = [1, 3][Math.floor(rng() * 2)]; // 1 (grijs) of 3 (RGB)
+    const shadesPerColor = Math.pow(2, Math.floor(rng() * 4) + 6); // 64–512
+    const bitsPerPixel = numColors * Math.ceil(Math.log2(shadesPerColor));
+    const totalBits = width * height * bitsPerPixel;
+    const totalBytes = Math.ceil(totalBits / 8);
+
+    questions.push({
+      label: `Gegeven een videoframe van ${width}×${height} beeldpunten (pixels). Elk beeldpunt heeft ${numColors} kleur(en). Elke kleur kent ${shadesPerColor} tinten. Dit videoframe wordt ongecomprimeerd over een netwerk verstuurd. <br> Hoeveel bytes worden er dan minimaal verzonden?`,
+      answer: `${totalBytes}`,
+      explanation: `${width} × ${height} = ${width * height} pixels. Elk pixel heeft ${numColors} kleur(en) met ${shadesPerColor} tinten, dus ${bitsPerPixel} bits per pixel. Totaal: ${totalBits} bits = ${totalBytes} bytes.`
+    });
+  }
+
+
+  // Vraag 10 – Tag-bits bij direct mapped cache
+  {
+    const memoryMB = Math.pow(2, Math.floor(rng() * 5) + 1); // 2–32 MB
+    const memoryBytes = memoryMB * 1024 * 1024;
+    const cacheKB = Math.pow(2, Math.floor(rng() * 4) + 1); // 2–16 KB
+    const cacheLines = (cacheKB * 1024) / 1; // 1 byte per blok
+    const addressBits = Math.ceil(Math.log2(memoryBytes));
+    const indexBits = Math.ceil(Math.log2(cacheLines));
+    const offsetBits = 0; // 1 byte per blok
+    const tagBits = addressBits - indexBits - offsetBits;
+
+    questions.push({
+      label: `Gegeven een systeem met een woordbreedte van 1 byte, een (maximaal) geheugen van ${memoryMB} MB en een cache van ${cacheKB} KB. <br> Bij direct mapped cache, hoeveel bits is het tag-veld van dit systeem?`,
+      answer: `${tagBits}`,
+      explanation: `Geheugen: ${memoryBytes.toLocaleString()} bytes → ${addressBits} adresbits.<br>Cache met ${cacheKB} KB = ${cacheLines} regels → ${indexBits} indexbits.<br>Tag = ${addressBits} - ${indexBits} - ${offsetBits} = ${tagBits} bits.`
+    });
+  }
 
   return questions;
 }
