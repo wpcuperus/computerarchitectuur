@@ -29,55 +29,70 @@ function generateWeek2Questions() {
     return [a, b];
   }
 
+  function getSafeTwosComplementPair(bits, operation) {
+  const min = -(1 << (bits - 1));
+  const max = (1 << (bits - 1)) - 1;
+  let a, b, result;
+
+  do {
+    a = Math.floor(rng() * (max - min + 1)) + min;
+    b = Math.floor(rng() * (max - min + 1)) + min;
+    result = operation === 'add' ? a + b : a - b;
+  } while (result < min || result > max);
+
+  return [a, b];
+}
+
+
   
 
-  // Vraag: Optellen in two's complement 4 bits
-  {
-    const [a, b] = getRandomTwosComplementPair(4);
-    const result = a + b;
-    const binaryAnswer = toTwosComplement(result, 4);
-    questions.push({
-      label: `Wat is ${a} + ${b} in two's complement (4 bits)?`,
-      answer: result.toString(),
-      binaryAnswer
-    });
-  }
+{
+  const [a, b] = getSafeTwosComplementPair(4, 'add');
+  const result = a + b;
+  const binaryAnswer = toTwosComplement(result, 4);
+  questions.push({
+    label: `Wat is ${a} + ${b} in two's complement (4 bits)?`,
+    answer: result.toString(),
+    binaryAnswer
+  });
+}
 
-  // Vraag: Aftrekken in two's complement 4 bits
-  {
-    const [a, b] = getRandomTwosComplementPair(4);
-    const result = a - b;
-    const binaryAnswer = toTwosComplement(result, 4);
-    questions.push({
-      label: `Wat is ${a} - ${b} in two's complement (4 bits)?`,
-      answer: result.toString(),
-      binaryAnswer
-    });
-  }
 
-  // Vraag: Optellen in two's complement 8 bits
-  {
-    const [a, b] = getRandomTwosComplementPair(8);
-    const result = a + b;
-    const binaryAnswer = toTwosComplement(result, 8);
-    questions.push({
-      label: `Wat is ${a} + ${b} in two's complement (8 bits)?`,
-      answer: result.toString(),
-      binaryAnswer
-    });
-  }
+{
+  const [a, b] = getSafeTwosComplementPair(4, 'sub');
+  const result = a - b;
+  const binaryAnswer = toTwosComplement(result, 4);
+  questions.push({
+    label: `Wat is ${a} - ${b} in two's complement (4 bits)?`,
+    answer: result.toString(),
+    binaryAnswer
+  });
+}
 
-  // Vraag: Aftrekken in two's complement 8 bits
-  {
-    const [a, b] = getRandomTwosComplementPair(8);
-    const result = a - b;
-    const binaryAnswer = toTwosComplement(result, 8);
-    questions.push({
-      label: `Wat is ${a} - ${b} in two's complement (8 bits)?`,
-      answer: result.toString(),
-      binaryAnswer
-    });
-  }
+
+{
+  const [a, b] = getSafeTwosComplementPair(8, 'add');
+  const result = a + b;
+  const binaryAnswer = toTwosComplement(result, 8);
+  questions.push({
+    label: `Wat is ${a} + ${b} in two's complement (8 bits)?`,
+    answer: result.toString(),
+    binaryAnswer
+  });
+}
+
+
+{
+  const [a, b] = getSafeTwosComplementPair(8, 'sub');
+  const result = a - b;
+  const binaryAnswer = toTwosComplement(result, 8);
+  questions.push({
+    label: `Wat is ${a} - ${b} in two's complement (8 bits)?`,
+    answer: result.toString(),
+    binaryAnswer
+  });
+}
+
 
 // Vraag: Hex naar IEEE 754 float (beperkt bereik en precisie)
 {
