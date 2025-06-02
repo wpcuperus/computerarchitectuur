@@ -43,7 +43,33 @@ function generateWeek2Questions() {
   return [a, b];
 }
 
+const twosComplementHint = (a, b, bits) => {
+    return `Stap 1: Zet ${a} en ${b} om naar binair (${bits} bits).<br>` +
+           `Stap 2: Als een getal negatief is, neem dan het binaire getal en **inverteer** de bits.<br>` +
+           `Stap 3: **Tel 1 op** bij het geïnverteerde getal om de two's complement representatie te krijgen.`;
+  };
 
+  const ieeeHintFromHex = (hex) => {
+    return `Gebruik de 32-bit IEEE 754 structuur: 1 bit teken, 8 bits exponent, 23 bits mantisse.<br>` +
+           `Zet 0x${hex} eerst om naar binair (32 bits).<br>` +
+           `Pas de bias toe op de exponent (bias = 127) om het decimale getal te berekenen.`;
+  };
+
+  const ieeeHintFromBinary = (binary) => {
+    return `Splits het binaire getal op in drie delen:<br>` +
+           `- Tekenbit (1 bit): bepaalt positief of negatief<br>` +
+           `- Exponent (8 bits): pas bias 127 toe<br>` +
+           `- Mantisse (23 bits): decodeer met impliciete '1.' aan het begin<br>` +
+           `Combineer met: waarde = (-1)^teken × 1.mantisse × 2^(exponent - 127)`;
+  };
+
+  const ieeeHintToHex = (floatVal) => {
+    return `Zet ${floatVal} om naar binair volgens IEEE 754:<br>` +
+           `1. Bepaal het tekenbit (0 voor positief, 1 voor negatief)<br>` +
+           `2. Zet het getal in binair genormaliseerd formaat (1.xxxxx × 2^e)<br>` +
+           `3. Bereken exponent + bias (127) en codeer deze (8 bits)<br>` +
+           `4. Gebruik de resterende bits voor de mantisse (zonder de '1.')`;
+  };
   
 
 {
@@ -53,6 +79,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (4-bits) Optelling',
     label: `Wat is ${a} + ${b} in two's complement (4 bits)?`,
+    hint: twosComplementHint(a, b, 4),
     answer: result.toString(),
     binaryAnswer
   });
@@ -66,6 +93,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (4-bits) Aftrekking',
     label: `Wat is ${a} - ${b} in two's complement (4 bits)?`,
+    hint: twosComplementHint(a, b, 4),
     answer: result.toString(),
     binaryAnswer
   });
@@ -79,6 +107,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (8-bits) Optelling',
     label: `Wat is ${a} + ${b} in two's complement (8 bits)?`,
+    hint: twosComplementHint(a, b, 8),
     answer: result.toString(),
     binaryAnswer
   });
@@ -92,6 +121,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (8-bits) Aftrekking',
     label: `Wat is ${a} - ${b} in two's complement (8 bits)?`,
+    hint: twosComplementHint(a, b, 8),
     answer: result.toString(),
     binaryAnswer
   });
@@ -121,6 +151,7 @@ const correctFloat = parseFloat(floatVal).toString();
 questions.push({
   title: 'Hex naar IEEE 754 floating point',
   label: `Welk decimaal getal hoort bij het IEEE 754 hexadecimale getal 0x${hex}? (Je mag een punt of komma als decimaalteken gebruiken)`,
+  hint: ieeeHintFromHex(hex),
   answer: correctFloat,
   correctAnswers: [correctFloat, correctFloat.replace('.', ',')]
 });
@@ -152,6 +183,7 @@ const hexStr = hex.toUpperCase();
 questions.push({
   title: 'IEEE 754 floating point naar hexadecimaal',
   label: `Wat is de IEEE 754 (32-bit single precision) hexadecimale representatie van ${floatVal}? (Je mag het antwoord met of zonder "0x" prefix geven)`,
+  hint: 'Zet het decimale getal eerst om naar 32-bits binair. Converteer vervolgens de binaire representatie naar hexadecimaal door elke 4 bits om te zetten naar een hexadecimaal cijfer.',
   answer: `0x${hexStr}`,
   correctAnswers: [`0x${hexStr}`, hexStr]
 });
@@ -184,6 +216,7 @@ const floatStr = floatVal.toString();
 questions.push({
   title: 'IEEE 754 floating point naar decimaal',
   label: `Converteer het volgende IEEE 754 (single-precision binary) floating-point getal naar een zo kort mogelijk decimaal getal:<br>${binary}<br>(Je mag een punt of komma als decimaalteken gebruiken)`,
+  hint: ieeeHintFromBinary(binary),
   answer: floatStr,
   correctAnswers: [floatStr, floatStr.replace('.', ',')]
 });
@@ -203,6 +236,7 @@ const convValue = Math.floor(rng() * (maxVal - minVal + 1)) + minVal;
 questions.push({
   title: 'Decimaal naar Two\'s Complement',
   label: `Zet het decimale getal ${convValue} om naar een two's complement getal van ${convBits} bits:`,
+  hint: twosComplementHint(convValue, "", 8),
   answer: convValue.toString(),
   binaryAnswer: toTwosComplementBinary(convValue, convBits)
 });
@@ -260,6 +294,7 @@ questions.push({
   questions.push({
     title: 'IEEE Floating Point Vermenigvuldiging',
     label: `Stel een IEEE floating point getal wordt vermenigvuldigd met ${factor}. Wat verandert er dan in de IEEE floating point notatie van het getal?<br>Antwoord met tekenbit, exponent en/of mantisse`,
+    hint: `Denk na over hoe vermenigvuldiging met ${factor} de waarde van een getal beïnvloedt. Welke delen van de IEEE notatie (tekenbit, exponent, mantisse) worden aangepast?`,
     answer: selectedType,
     explanation: `Deze factor (${factor}) zorgt voor verandering in: ${selectedType}`
   });

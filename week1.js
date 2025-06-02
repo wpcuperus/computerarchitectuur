@@ -48,18 +48,30 @@ function getRandomNumber(base, min = 0, max = Math.pow(base, 3) - 1) {
   return randomValue.toString(base);
 }
 
-// Individuele vraaggeneratoren
 function generateHexToDecimalQuestion() {
   const hexVal = Math.floor(rng() * (65535 - 4096 + 1)) + 4096;
   const hex = hexVal.toString(16).toUpperCase().padStart(4, '0');
+
+  // Dynamische hint op basis van hex digits
+  const digits = hex.split('');
+  const powers = digits.map((digit, index) => {
+    const dec = parseInt(digit, 16);
+    const power = digits.length - index - 1;
+    return `${dec} * 16^${power}`;
+  });
+
+  const hint = powers.join(' + ') + ' = ?';
+
   return {
     id: 'hex-to-decimal',
     title: 'Hexadecimale conversie',
     label: `Zet het hexadecimale getal ${hex} om naar decimaal:`,
+    hint: hint,
     answer: parseInt(hex, 16),
     explanation: `Het hexadecimale getal ${hex} is gelijk aan ${parseInt(hex, 16)} in decimaal.`
   };
 }
+
 
 function generateBinToDecimalQuestion() {
   const bin = getRandomNumber(2, 8, 255);
@@ -67,6 +79,7 @@ function generateBinToDecimalQuestion() {
     id: 'bin-to-decimal',
     title: 'Binaire conversie',
     label: `Zet het binaire getal ${bin} om naar decimaal:`,
+    hint: `${bin.split('').map((bit, index) => `${bit} * 2^${bin.length - index - 1}`).join(' + ')} = ?`,
     answer: parseInt(bin, 2),
     explanation: `Het binaire getal ${bin} is gelijk aan ${parseInt(bin, 2)} in decimaal.`
   };
@@ -79,6 +92,7 @@ function generateOctToDecimalQuestion() {
     id: 'oct-to-decimal',
     title: 'Octale conversie',
     label: `Zet het octale getal ${oct} om naar decimaal:`,
+    hint: `${oct.split('').map((digit, index) => `${digit} * 8^${oct.length - index - 1}`).join(' + ')} = ?`,
     answer: parseInt(oct, 8),
     explanation: `Het octale getal ${oct} is gelijk aan ${parseInt(oct, 8)} in decimaal.`
   };
@@ -91,6 +105,7 @@ function generateCustomToDecimalQuestion() {
     id: 'custom-to-decimal',
     title: 'Conversie naar aangepast talstelsel',
     label: `Zet het getal ${custom} van het ${base}-tallige stelsel om naar decimaal:`,
+    hint: `${custom.split('').map((digit, index) => `${digit} * ${base}^${custom.length - index - 1}`).join(' + ')} = ?`,
     answer: parseInt(custom, base),
     explanation: `Het getal ${custom} in het ${base}-tallige stelsel is gelijk aan ${parseInt(custom, base)} in decimaal.`
   };
@@ -102,6 +117,7 @@ function generateBinToHexQuestion() {
     id: 'bin-to-hex',
     title: 'Binaire conversie naar hexadecimaal',
     label: `Zet het binaire getal ${bin} om naar hexadecimaal:`,
+    hint: `Splits het binaire getal in groepen van 4 bits: ${bin.padStart(Math.ceil(bin.length / 4) * 4, '0')}.<br>Converteer elke groep naar hexadecimaal.`,
     answer: binaryToHex(bin),
     explanation: `Het binaire getal ${bin} is gelijk aan ${parseInt(bin, 2)} in decimaal, wat ${binaryToHex(bin)} is in hexadecimaal.`
   };
@@ -114,6 +130,7 @@ function generateOctToHexQuestion() {
     id: 'oct-to-hex',
     title: 'Octale conversie naar hexadecimaal',
     label: `Zet het octale getal ${oct} om naar hexadecimaal:`,
+    hint: 'Converteer eerst de octale cijfers ' + oct.split('') + ' naar binair.<br>Converteer vervolgens de binaire groepen naar hexadecimaal.',
     answer: octToHex(oct),
     explanation: `Het octale getal ${oct} is gelijk aan ${parseInt(oct, 8)} in decimaal, wat ${octToHex(oct)} is in hexadecimaal.`
   };
@@ -125,6 +142,7 @@ function generateDecToHexQuestion() {
     id: 'dec-to-hex',
     title: 'Decimale conversie naar hexadecimaal',
     label: `Zet het decimale getal ${dec} om naar hexadecimaal:`,
+    hint: `Gebruik de deling door 16 methode: ${dec} / 16 = ?<br>Neem de rest en deel het resultaat opnieuw door 16.`,
     answer: decimalToHex(dec),
     explanation: `Het decimale getal ${dec} is gelijk aan ${decimalToHex(dec)} in hexadecimaal.`
   };
@@ -138,6 +156,7 @@ function generateBinaryMultiplicationQuestion() {
     id: 'bin-multiplication',
     title: 'Binaire vermenigvuldiging',
     label: `Wat is ${bin1} × ${bin2} (binair)?`,
+    hint: 'Het is mogelijk om van de vermenigvuldigingssom een optelling te maken met binaire getallen, bijvoorbeeld: 1010 * 1101 = 1010 + 10100 + 000000 + 1010000.',
     answer: decimalToBinary(result),
     explanation: `Het binaire getal ${bin1} is ${parseInt(bin1, 2)} en ${bin2} is ${parseInt(bin2, 2)}. Hun product is ${result}, wat binair ${decimalToBinary(result)} is.`
   };
@@ -240,6 +259,7 @@ function generateSubnetQuestion() {
     id: 'subnet-question',
     title: 'IP-adressen en subnetten',
     label: `Adres A: ${ipA.join('.')}<br>Adres B: ${ipB.join('.')}<br>Masker: ${mask.join('.')}<br><strong>Behoren deze IP-adressen tot dezelfde reeks?</strong><br><em>(Antwoord: "juist" of "onjuist")</em>`,
+    hint: `Gebruik AND om de netwerken te vergelijken met het masker: ${mask.join('.')}.`,
     answer: correct,
     explanation: aNet === bNet
       ? `✔️ Adressen zitten in hetzelfde subnet want ${aNet} == ${bNet}`
@@ -256,10 +276,22 @@ function generateBaseAdditionToHexQuestion() {
   const sumDec = val1Dec + val2Dec;
   const sumHex = sumDec.toString(16).toUpperCase().padStart(2, '0');
 
+  let hint = '';
+
+  if (base !== 10) {
+    const digits1 = val1Base.split('').map((char, i) => `${char}×${base}^${val1Base.length - i - 1}`).join(' + ');
+    const digits2 = val2Base.split('').map((char, i) => `${char}×${base}^${val2Base.length - i - 1}`).join(' + ');
+    hint += `Zet beide getallen om naar decimaal met de formule:<br>${val1Base} = ${digits1}<br>${val2Base} = ${digits2}<br>`;
+  }
+
+  hint += 'Tel vervolgens de decimale waarden op en zet het resultaat om naar hexadecimaal met de formule:<br>';
+  hint += 'decimaal / 16 → noteer de rest → deel opnieuw tot 0 → lees hex van onder naar boven.';
+
   return {
     id: 'base-addition',
     title: `Optelling in een aangepast talstelsel`,
-    label: `Tel ${val1Base} en ${val2Base} op en geef het resultaat in hex:`,
+    label: `Tel de getallen ${val1Base} en ${val2Base} (beide getallen behoren tot het ${base}-tallig stelsel) op en geef het resultaat als hexadecimaal getal:`,
+    hint: hint,
     answer: `0x${sumHex}`,
     explanation: `${val1Base} (${val1Dec}) + ${val2Base} (${val2Dec}) = ${sumDec} = 0x${sumHex}`
   };

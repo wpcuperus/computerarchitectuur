@@ -71,11 +71,14 @@ function generateQuiz() {
   currentQuestions.forEach((q, index) => {
   const div = document.createElement('div');
   div.className = 'question';
-  div.innerHTML = `
-    <label for="q${index}"><strong>Vraag ${index + 1}:</strong> ${q.label}</label><br>
-    <input type="text" id="q${index}" />
-    <div class="feedback" id="feedback-${index}" style="min-height: 2em; margin-top: 5px;"></div>
-  `;
+div.innerHTML = `
+  <label for="q${index}"><strong>Vraag ${index + 1}:</strong> ${q.label}</label><br>
+  <input type="text" id="q${index}" />
+  ${q.hint ? `<button type="button" onclick="showHint(${index})">Toon hint</button>` : ''}
+  <div class="hint" id="hint-${index}" style="margin-top: 0.5em; color: #555;"></div>
+  <div class="feedback" id="feedback-${index}" style="min-height: 2em;"></div>
+`;
+
 
   container.appendChild(div);
   });
@@ -194,3 +197,10 @@ window.onload = () => {
   generateQuiz();
 };
 
+function showHint(index) {
+  const hintContainer = document.getElementById(`hint-${index}`);
+  const question = selectedQuestions[index];
+  if (question && question.hint) {
+    hintContainer.innerHTML = `<em>Hint:</em> ${question.hint}`;
+  }
+}
