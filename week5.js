@@ -17,6 +17,7 @@ function generateWeek5Questions() {
   const explanation = `Voor ${selectedBits}-bits registers moet er ${bytes} byte${bytes > 1 ? 's' : ''} op de stack worden gereserveerd. Dit gebeurt door de stack pointer (sp) met ${bytes} byte${bytes > 1 ? 's' : ''} omlaag te verplaatsen: \`${correctAnswer}\`.`;
 
   questions.push({
+    title: 'Stack Opslaan',
     label: html,
     answer: correctAnswer,
     correctAnswers: [correctAnswer, altAnswer],
@@ -50,6 +51,7 @@ function generateWeek5Questions() {
       ${initialSP.toString(16)} - ${offset.toString(16)} = ${newSP.toString(16)}.`;
 
     questions.push({
+      title: 'Stack Pointer Aanpassing',
       label: html,
       answer: correctAnswer,
       correctAnswers: [correctAnswer, altAnswer],
@@ -87,6 +89,7 @@ function generateWeek5Questions() {
       Alleen callee-saved registers moeten door een leaf procedure gesaved/gerestored worden.`;
 
     questions.push({
+      title: 'Leaf Procedure Calls',
       label: html,
       answer: correctAnswer,
       correctAnswers: [correctAnswer.toLowerCase(), correctAnswer.toUpperCase()],
@@ -159,6 +162,7 @@ const correctAnswers = [
 ].filter(Boolean);
 
 questions.push({
+  title: 'Non-Leaf Procedure Stack Verantwoordelijkheden',
   label: html,
   answer: correctAnswer,
   correctAnswers: correctAnswers,

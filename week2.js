@@ -51,6 +51,7 @@ function generateWeek2Questions() {
   const result = a + b;
   const binaryAnswer = toTwosComplement(result, 4);
   questions.push({
+    title: 'Two\'s Complement (4-bits) Optelling',
     label: `Wat is ${a} + ${b} in two's complement (4 bits)?`,
     answer: result.toString(),
     binaryAnswer
@@ -63,6 +64,7 @@ function generateWeek2Questions() {
   const result = a - b;
   const binaryAnswer = toTwosComplement(result, 4);
   questions.push({
+    title: 'Two\'s Complement (4-bits) Aftrekking',
     label: `Wat is ${a} - ${b} in two's complement (4 bits)?`,
     answer: result.toString(),
     binaryAnswer
@@ -75,6 +77,7 @@ function generateWeek2Questions() {
   const result = a + b;
   const binaryAnswer = toTwosComplement(result, 8);
   questions.push({
+    title: 'Two\'s Complement (8-bits) Optelling',
     label: `Wat is ${a} + ${b} in two's complement (8 bits)?`,
     answer: result.toString(),
     binaryAnswer
@@ -87,6 +90,7 @@ function generateWeek2Questions() {
   const result = a - b;
   const binaryAnswer = toTwosComplement(result, 8);
   questions.push({
+    title: 'Two\'s Complement (8-bits) Aftrekking',
     label: `Wat is ${a} - ${b} in two's complement (8 bits)?`,
     answer: result.toString(),
     binaryAnswer
@@ -115,6 +119,7 @@ function generateWeek2Questions() {
 
 const correctFloat = parseFloat(floatVal).toString();
 questions.push({
+  title: 'Hex naar IEEE 754 floating point',
   label: `Welk decimaal getal hoort bij het IEEE 754 hexadecimale getal 0x${hex}? (Je mag een punt of komma als decimaalteken gebruiken)`,
   answer: correctFloat,
   correctAnswers: [correctFloat, correctFloat.replace('.', ',')]
@@ -145,6 +150,7 @@ questions.push({
 
 const hexStr = hex.toUpperCase();
 questions.push({
+  title: 'IEEE 754 floating point naar hexadecimaal',
   label: `Wat is de IEEE 754 (32-bit single precision) hexadecimale representatie van ${floatVal}? (Je mag het antwoord met of zonder "0x" prefix geven)`,
   answer: `0x${hexStr}`,
   correctAnswers: [`0x${hexStr}`, hexStr]
@@ -176,6 +182,7 @@ questions.push({
 
 const floatStr = floatVal.toString();
 questions.push({
+  title: 'IEEE 754 floating point naar decimaal',
   label: `Converteer het volgende IEEE 754 (single-precision binary) floating-point getal naar een zo kort mogelijk decimaal getal:<br>${binary}<br>(Je mag een punt of komma als decimaalteken gebruiken)`,
   answer: floatStr,
   correctAnswers: [floatStr, floatStr.replace('.', ',')]
@@ -194,6 +201,7 @@ const convValue = Math.floor(rng() * (maxVal - minVal + 1)) + minVal;
 
 // Voeg de vraag toe
 questions.push({
+  title: 'Decimaal naar Two\'s Complement',
   label: `Zet het decimale getal ${convValue} om naar een two's complement getal van ${convBits} bits:`,
   answer: convValue.toString(),
   binaryAnswer: toTwosComplementBinary(convValue, convBits)
@@ -250,6 +258,7 @@ questions.push({
   const factor = getRandomFactor(selectedType);
 
   questions.push({
+    title: 'IEEE Floating Point Vermenigvuldiging',
     label: `Stel een IEEE floating point getal wordt vermenigvuldigd met ${factor}. Wat verandert er dan in de IEEE floating point notatie van het getal?<br>Antwoord met tekenbit, exponent en/of mantisse`,
     answer: selectedType,
     explanation: `Deze factor (${factor}) zorgt voor verandering in: ${selectedType}`

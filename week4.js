@@ -66,6 +66,7 @@ const uitleg = `✔️ Het bit op positie ${bitPosition} (van rechts, 0-gebaseer
 Het juiste antwoord is dus: "${correctAnswer}"`;
 
 questions.push({
+  title: 'Bit in Register Instellen',
   label: html,
   answer: correctLabel,
   correctAnswers: [correctLabel],
@@ -142,6 +143,7 @@ Offset ${offsetLb} bevat byte 0x${bytes[offsetLb].toString(16).padStart(2, '0')}
 `;
 
     questions.push({
+      title: 'Endianess in Assembly Code',
 label: `
 <p>Gegeven onderstaande assembly code:</p>
 <pre><code>${asmCode.trim()}</code></pre>
@@ -334,6 +336,7 @@ Deze decodeert als: <code>${isRType ? `${instr.mnemonic} x${rd}, x${rs1}, x${rs2
 Gebaseerd op de opcode en funct-velden volgens de RISC-V instructietabel.`;
 
 questions.push({
+  title: 'RISC-V Instructie Decoderen op basis van instructiegeheugen',
   label: questionText,
   answer: isRType
     ? `${instr.mnemonic} x${rd}, x${rs1}, x${rs2}`
@@ -393,6 +396,7 @@ Dit is precies hoe RISC-V instructies in assembler worden geschreven: <code>${co
 `;
 
   questions.push({
+    title: 'RISC-V Instructie Decoderen op basis van tabel',
     label: html,
     answer: correctAnswer,
     correctAnswers: [correctAnswer],
@@ -459,6 +463,7 @@ Geef het antwoord als volgt: 0x45, 0xBB, 0x12</p>
   const correctAnswer = `0x${newX6.toString(16).toUpperCase()}, 0x${x16.toString(16).toUpperCase()}, 0x${x17.toString(16).toUpperCase()}`;
 
   questions.push({
+    title: 'RISC-V Instructie Uitkomst Bepalen',
     label: html,
     answer: correctAnswer,
     correctAnswers: [correctAnswer],
@@ -542,6 +547,7 @@ Geef het antwoord als volgt: 0x45, 0xBB, 0x12</p>
   `;
 
   questions.push({
+    title: 'Branch Target Bepalen',
     label: html,
     answer: jumpTargetLabel,
     correctAnswers: [jumpTargetLabel],

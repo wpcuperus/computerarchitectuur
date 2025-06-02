@@ -59,6 +59,7 @@ x16 = 0x${x16_val.toString(16).padStart(2,'0').toUpperCase()} <br>
 Welke notatiewijze wordt gebruikt door de processor?`;
 
     questions.push({
+      title: 'Endianess in Assembly Code',
       label: questionText,
       answer: littleEndian ? 'little endian' : 'big endian',
       correctAnswers: ['little endian', 'big endian']
@@ -110,6 +111,7 @@ Welke notatiewijze wordt gebruikt door de processor?`;
   Wat is de ${dataSize * 8}-bits waarde gelezen vanaf geheugenlocatie 0x${(startAddrInt + offset).toString(16).toUpperCase()}? (Houd rekening met de endianess: ${littleEndian ? 'little endian' : 'big endian'})`;
 
   questions.push({
+    title: 'Geheugendump en Waarde Lezen',
     label: questionText,
     answer: hexValue.toLowerCase(),  // Antwoord in kleine letters
     correctAnswers: [hexValue.toLowerCase()]

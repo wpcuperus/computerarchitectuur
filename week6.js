@@ -13,6 +13,7 @@ function generateWeek6Questions() {
     const sizeMiB = Math.pow(2, power) / (1024 * 1024);
 
     questions.push({
+      title: 'Tag-bits in direct-mapped cache',
       label: `Gegeven is een direct-mapped cache voor een systeem met ${sizeMiB.toFixed(0)}MiB adressen. Op elk adres kan 1 byte aan data worden opgeslagen. De cache heeft 512 regels (elke regel: valid-bit + tag + data).<br>Uit hoeveel bits bestaat het tag-veld van elke regel in de cache?`,
       answer: tagBits,
       explanation: `${sizeMiB} MiB = 2^${addressBits} adressen = ${addressBits} adresbits. Cache: 512 regels = 2^${indexBits} → indexbits = ${indexBits}. Geen offsetbits. tag = ${addressBits} - ${indexBits} = ${tagBits}.`
@@ -28,6 +29,7 @@ function generateWeek6Questions() {
     const amat = (1 + (missRatio / 100) * missPenalty) * nsPerCycle;
 
     questions.push({
+      title: 'Gemiddelde toegangstijd tot geheugen (AMAT)',
       label: `Gegeven met een processor met de volgende gegevens:<br>• ${nsPerCycle} nanoseconde per clock-cycle<br>• cache hit access time = 1 clock-cycle<br>• cache miss penalty = ${missPenalty} clock-cycles<br>• cache miss ratio = ${missRatio}%<br>Wat is de gemiddelde access tijd tot het geheugen?`,
       answer: `${Math.round(amat)} ns`,
       explanation: `AMAT = (1 + ${missRatio / 100} * ${missPenalty}) × ${nsPerCycle} = ${amat.toFixed(2)} ns`
@@ -42,6 +44,7 @@ function generateWeek6Questions() {
     const kib = bytes / 1024;
 
     questions.push({
+      title: 'Maximaal adresseren geheugen',
       label: `Een processor maakt gebruik van een ${addressBits} bits adresbus en een ${dataBits} bits databus. Hoeveel geheugen in KiB (kibibyte) kan men maximaal adresseren?`,
       answer: `${kib} KiB`,
       explanation: `${addressBits} bits adresbus = 2^${addressBits} = ${bytes} bytes → ${kib} KiB`
@@ -55,6 +58,7 @@ function generateWeek6Questions() {
     const duration = (startVal / freq) * 1000; // in milliseconden
 
     questions.push({
+      title: 'Teller reset tijd',
       label: `Neem aan dat de systeemklok een frequentie heeft van ${freq / 1e6} MHz. We maken gebruik van een teller die wordt ingesteld met een startwaarde. Elke klokperiode wordt de teller met 1 verlaagd. Als de teller 0 bereikt wordt hij gereset naar de startwaarde. De startwaarde wordt ingesteld op ${startVal}.<br>Hoe lang duurt het voordat de teller wordt gereset?`,
       answer: `${duration.toFixed(2)} ms`,
       explanation: `1 klokperiode = 1/${freq} s. Reset = ${startVal} × (1/${freq}) = ${duration} ms`
@@ -68,6 +72,7 @@ function generateWeek6Questions() {
     const hexAddr = `0x${maxAddress.toString(16).toUpperCase()}`;
 
     questions.push({
+      title: 'Hoogste geheugenadres in hexadecimaal',
       label: `Een geheugenkaart maakt gebruik van een databus van 8 bits en een adresbus van ${addressBits} bits. Het geheugen is byte addresseerbaar. Wat is het hoogste geheugenadres uitgedrukt als hexadecimaal getal?`,
       answer: hexAddr,
       explanation: `${addressBits} bits → hoogste adres = 2^${addressBits} - 1 = ${maxAddress} = ${hexAddr}`
@@ -85,6 +90,7 @@ function generateWeek6Questions() {
     const winner = atmelIPS > interchipIPS ? 'Atmel' : 'Interchip';
 
     questions.push({
+      title: 'Vergelijking Atmel en Interchip processors',
       label: `De firma Atmel biedt 8-bits RISC-processoren aan waarbij alle instructies in één klokperiode worden uitgevoerd. De frequentie is ${atmelFreq / 1e6} MHz.<br>De firma Interchip biedt een 8-bits platform aan waarbij elke instructie 4 klokperiodes duurt, met een frequentie van ${interchipFreq / 1e6} MHz.<br>Welk van deze beide processors verwerkt meer instructies per seconde?`,
       answer: winner,
       explanation: `Atmel: ${atmelFreq / 1e6}M / 1 = ${atmelIPS} IPS<br>Interchip: ${interchipFreq / 1e6}M / 4 = ${interchipIPS} IPS<br>→ ${winner} is sneller`
@@ -96,6 +102,7 @@ function generateWeek6Questions() {
     const totalCycles = 16;
 
     questions.push({
+      title: 'Pipelining en forwarding in RISC-V',
       label: `Gegeven onderstaand programma.<br><br><code>
 .data<br>
 &nbsp;&nbsp;arr: .word 5 10 20 30 40 50 60 70 80 90 100<br><br>
@@ -128,6 +135,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
     const addressLines = Math.ceil(Math.log2(totalBytes));
 
     questions.push({
+      title: 'Adreslijnen voor geheugenchips',
       label: `Een embedded computersysteem heeft ${chipCount} geheugenchip${chipCount > 1 ? 's' : ''} van elk ${chipSizeKiB} KiB.<br>Hoeveel adreslijnen heb je nodig om elke byte in elke chip aan te kunnen spreken?`,
       answer: `${addressLines}`,
       explanation: `${chipCount} × ${chipSizeKiB} KiB = ${totalBytes} bytes totaal → log₂(${totalBytes}) = ${addressLines} adreslijnen nodig`
@@ -141,6 +149,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
     const addressLines = Math.ceil(Math.log2(sizeBytes));
 
     questions.push({
+      title: 'Adreslijnen voor geheugenkaart',
       label: `Een geheugenkaart bevat ${sizeMB} MB geheugenadressen, hoeveel adreslijnen zijn nodig om dit geheugen te adresseren?`,
       answer: `${addressLines}`,
       explanation: `${sizeMB} MB = ${sizeBytes.toLocaleString()} bytes. Aantal bits om elk uniek adres aan te wijzen = log₂(${sizeBytes}) = ${addressLines} bits.`
@@ -167,6 +176,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
     const totalBytes = Math.ceil(totalBits / 8);
 
     questions.push({
+      title: 'Videoframe ongecomprimeerd versturen',
       label: `Gegeven een videoframe van ${width}×${height} beeldpunten (pixels). Elk beeldpunt heeft ${numColors} kleur(en). Elke kleur kent ${shadesPerColor} tinten. Dit videoframe wordt ongecomprimeerd over een netwerk verstuurd. <br> Hoeveel bytes worden er dan minimaal verzonden?`,
       answer: `${totalBytes}`,
       explanation: `${width} × ${height} = ${width * height} pixels. Elk pixel heeft ${numColors} kleur(en) met ${shadesPerColor} tinten, dus ${bitsPerPixel} bits per pixel. Totaal: ${totalBits} bits = ${totalBytes} bytes.`
@@ -186,6 +196,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
     const tagBits = addressBits - indexBits - offsetBits;
 
     questions.push({
+      title: 'Tag-bits bij direct mapped cache',
       label: `Gegeven een systeem met een woordbreedte van 1 byte, een (maximaal) geheugen van ${memoryMB} MB en een cache van ${cacheKB} KB. <br> Bij direct mapped cache, hoeveel bits is het tag-veld van dit systeem?`,
       answer: `${tagBits}`,
       explanation: `Geheugen: ${memoryBytes.toLocaleString()} bytes → ${addressBits} adresbits.<br>Cache met ${cacheKB} KB = ${cacheLines} regels → ${indexBits} indexbits.<br>Tag = ${addressBits} - ${indexBits} - ${offsetBits} = ${tagBits} bits.`
