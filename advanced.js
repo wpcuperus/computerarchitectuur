@@ -1,7 +1,6 @@
 let rng = mulberry32(Date.now());
 let allQuestions = [];
 
-// Laad alle vragen
 function loadAllQuestions() {
   allQuestions = [
     ...generateWeek1Questions().map(q => ({ ...q, week: 'week1' })),
@@ -14,6 +13,14 @@ function loadAllQuestions() {
   ];
 }
 
+function shuffleArray(array, rng) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+
 function getUniqueCategories() {
   const categorySet = new Set();
   allQuestions.forEach(q => {
@@ -24,67 +31,55 @@ function getUniqueCategories() {
   return Array.from(categorySet).sort();
 }
 
-
-// Toon de checkboxen
 function displayQuestionSelection() {
   const container = document.getElementById('question-selection');
   container.innerHTML = '';
 
-  // Voeg categorie-filter toe
-const uniqueCategories = getUniqueCategories();
-const filterDiv = document.createElement('div');
-filterDiv.id = 'category-filter';
-filterDiv.innerHTML = `
-  <div style="margin-bottom: 0.5rem;"><strong>Filter op categorieën:</strong></div>
-  <div style="margin-bottom: 0.5rem;">
-    <label><input type="checkbox" id="select-all-categories" checked /> Selecteer alle categorieën</label>
-  </div>
-`;
-
-const catContainer = document.createElement('div');
-catContainer.className = 'category-filter-container';
-
-uniqueCategories.forEach(cat => {
-  const id = `cat-${cat}`;
-  const label = document.createElement('label');
-  label.className = 'category-checkbox';
-  label.innerHTML = `
-    <input type="checkbox" class="category-filter" value="${cat}" checked />
-    ${cat}
+  // Categorie-filter
+  const uniqueCategories = getUniqueCategories();
+  const filterDiv = document.createElement('div');
+  filterDiv.id = 'category-filter';
+  filterDiv.innerHTML = `
+    <div style="margin-bottom: 0.5rem;"><strong>Filter op categorieën:</strong></div>
+    <div style="margin-bottom: 0.5rem;">
+      <label><input type="checkbox" id="select-all-categories" checked /> Selecteer alle categorieën</label>
+    </div>
   `;
-  catContainer.appendChild(label);
-});
-filterDiv.appendChild(catContainer);
+  const catContainer = document.createElement('div');
+  catContainer.className = 'category-filter-container';
 
-container.appendChild(filterDiv);
-
-document.getElementById('select-all-categories').addEventListener('change', (e) => {
-  const checked = e.target.checked;
-  document.querySelectorAll('.category-filter').forEach(cb => {
-    cb.checked = checked;
+  uniqueCategories.forEach(cat => {
+    const id = `cat-${cat}`;
+    const label = document.createElement('label');
+    label.className = 'category-checkbox';
+    label.innerHTML = `
+      <input type="checkbox" class="category-filter" value="${cat}" checked />
+      ${cat}
+    `;
+    catContainer.appendChild(label);
   });
-  filterQuestionsByCategory();
-});
+  filterDiv.appendChild(catContainer);
+  container.appendChild(filterDiv);
 
+  document.getElementById('select-all-categories').addEventListener('change', (e) => {
+    const checked = e.target.checked;
+    document.querySelectorAll('.category-filter').forEach(cb => {
+      cb.checked = checked;
+    });
+    filterQuestionsByCategory();
+  });
 
-// Event listener voor filtering
-container.querySelectorAll('.category-filter').forEach(cb => {
-  cb.addEventListener('change', () => filterQuestionsByCategory());
-});
-
+  container.querySelectorAll('.category-filter').forEach(cb => {
+    cb.addEventListener('change', () => filterQuestionsByCategory());
+  });
 
   const grouped = {};
-
-  // Groepeer vragen per week
   allQuestions.forEach((q, index) => {
-    if (!grouped[q.week]) {
-      grouped[q.week] = [];
-    }
+    if (!grouped[q.week]) grouped[q.week] = [];
     grouped[q.week].push({ ...q, index });
   });
 
   const sortedWeeks = Object.keys(grouped).sort();
-
   const weekLabels = {
     week1: "Week 1: Intro en Talstelsels (sommen)",
     week2: "Week 2: Geheugenrepresentatie (sommen)",
@@ -95,12 +90,11 @@ container.querySelectorAll('.category-filter').forEach(cb => {
     week6: "Week 6: Processor en optimalisatie (sommen)"
   };
 
-    const questionListTitle = document.createElement('h3');
-questionListTitle.textContent = 'Selecteer de vragen:';
-questionListTitle.style.marginTop = '2rem';
-container.appendChild(questionListTitle);
+  const questionListTitle = document.createElement('h3');
+  questionListTitle.textContent = 'Selecteer de vragen:';
+  questionListTitle.style.marginTop = '2rem';
+  container.appendChild(questionListTitle);
 
-  // Globale selecteer alles checkbox
   const selectAllDiv = document.createElement('div');
   selectAllDiv.innerHTML = `
     <label>
@@ -112,13 +106,12 @@ container.appendChild(questionListTitle);
 
   document.getElementById('select-all').addEventListener('change', (e) => {
     const checked = e.target.checked;
-    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    container.querySelectorAll('input[type="checkbox"][data-index]').forEach(cb => {
       cb.checked = checked;
     });
+    updateSelectedQuestionCount();
   });
 
-
-  // Per week
   sortedWeeks.forEach(week => {
     const section = document.createElement('div');
     section.className = 'week-section';
@@ -133,48 +126,71 @@ container.appendChild(questionListTitle);
     `;
     section.appendChild(weekHeader);
 
-    // Vragen per week
-grouped[week].forEach(({ title, index, categories }) => {
-  const div = document.createElement('div');
-  div.className = 'question-select';
-  div.innerHTML = `
-    <label>
-      <input type="checkbox" data-index="${index}" checked class="week-checkbox-${week}" />
-      ${title} (${categories.join(', ')})
-    </label>
-  `;
-  section.appendChild(div);
-});
+    grouped[week].forEach(({ title, index, categories }) => {
+      const div = document.createElement('div');
+      div.className = 'question-select';
+      div.innerHTML = `
+        <label>
+          <input type="checkbox" data-index="${index}" checked class="week-checkbox-${week}" />
+          ${title} (${categories.join(', ')})
+        </label>
+      `;
+      const checkbox = div.querySelector('input[type="checkbox"]');
+      checkbox.addEventListener('change', updateSelectedQuestionCount);
+      section.appendChild(div);
+    });
 
     container.appendChild(section);
 
-    // Event handler voor week checkbox
     document.getElementById(weekId).addEventListener('change', (e) => {
       const checked = e.target.checked;
       section.querySelectorAll(`.week-checkbox-${week}`).forEach(cb => {
         cb.checked = checked;
       });
+      updateSelectedQuestionCount();
     });
   });
+
+  // Vraagenteller toevoegen vóór de knop
+  const countDisplay = document.createElement('div');
+  countDisplay.id = 'question-count';
+  countDisplay.style.marginTop = '1.5rem';
+  countDisplay.style.fontWeight = 'bold';
+  countDisplay.textContent = 'Aantal geselecteerde vragen: 0';
+  container.appendChild(countDisplay);
+
+  // Initialiseren
+  updateSelectedQuestionCount();
 }
 
-
+function updateSelectedQuestionCount() {
+  const selected = document.querySelectorAll('input[type="checkbox"][data-index]:checked').length;
+  const counter = document.getElementById('question-count');
+  if (counter) {
+    counter.textContent = `Aantal geselecteerde vragen: ${selected}`;
+  }
+}
 
 function generateCustomQuiz() {
   const selected = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
-  const selectedIndices = selected.map(cb => parseInt(cb.dataset.index));
+  const selectedIndices = selected
+    .filter(cb => cb.hasAttribute('data-index'))
+    .map(cb => parseInt(cb.dataset.index));
 
   if (selectedIndices.length === 0) {
     alert("Selecteer minstens één vraag om door te gaan.");
     return;
   }
 
-  // Encodeer geselecteerde indices in de URL
   const seed = Math.floor(Math.random() * 1_000_000);
-  const indicesParam = selectedIndices.join(',');
-  window.location.href = `advancedquiz.html?seed=${seed}&indices=${indicesParam}`;
-}
+  const shuffledIndices = [...selectedIndices];  // maak kopie
+  rng = mulberry32(seed);                        // maak deterministische RNG
+  shuffleArray(shuffledIndices, rng);            // hussel op basis van seed
 
+  const indicesParam = shuffledIndices.join(',');
+  window.location.href = `advancedquiz.html?seed=${seed}&indices=${indicesParam}`;
+
+}
 
 function checkCustomAnswers(questions) {
   let score = 0;
@@ -206,7 +222,6 @@ function checkCustomAnswers(questions) {
   document.getElementById('score').textContent = `Je score: ${score} van de ${questions.length}`;
 }
 
-// Mulberry32 RNG
 function mulberry32(a) {
   return function () {
     let t = a += 0x6D2B79F5;
@@ -216,21 +231,21 @@ function mulberry32(a) {
   };
 }
 
-// Init
-window.onload = () => {
-  loadAllQuestions();
-  displayQuestionSelection();
-  document.getElementById('generate-button').onclick = generateCustomQuiz;
-};
-
 function filterQuestionsByCategory() {
   const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked')).map(cb => cb.value);
 
   allQuestions.forEach((q, index) => {
     const element = document.querySelector(`[data-index="${index}"]`)?.closest('.question-select');
     if (!element) return;
-
     const matchesCategory = q.categories?.some(cat => selectedCategories.includes(cat));
     element.style.display = matchesCategory ? '' : 'none';
   });
+
+  updateSelectedQuestionCount();
 }
+
+window.onload = () => {
+  loadAllQuestions();
+  displayQuestionSelection();
+  document.getElementById('generate-button').onclick = generateCustomQuiz;
+};
