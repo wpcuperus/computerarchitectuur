@@ -59,9 +59,10 @@ x16 = 0x${x16_val.toString(16).padStart(2,'0').toUpperCase()} <br>
 Welke notatiewijze wordt gebruikt door de processor?`;
 
     questions.push({
-      title: 'Endianess in Assembly Code',
+      title: 'Endianness in Assembly Code',
       label: questionText,
       answer: littleEndian ? 'little endian' : 'big endian',
+      categories: ['Endianness'],
       hint: `Let op de volgorde van de bytes in het gegeven word: is de byte op offset 2 het derde of het eerste byte van rechts? Probeer de volgorde van de bytes te bepalen zoals ze in het geheugen worden opgeslagen bij little endian vs big endian.`,
       correctAnswers: ['little endian', 'big endian']
     });
@@ -115,6 +116,7 @@ Welke notatiewijze wordt gebruikt door de processor?`;
     title: 'Geheugendump en Waarde Lezen',
     label: questionText,
     answer: hexValue.toLowerCase(),  // Antwoord in kleine letters
+    categories: ['Endianness'],
     correctAnswers: [hexValue.toLowerCase()],
     hint: `Bepaal eerst de offset binnen de regel. Kijk vervolgens welke bytes je nodig hebt op basis van het aantal bits. Vergeet niet om de bytes om te keren bij little endian voordat je ze samenvoegt tot een hexadecimale waarde.`
   });

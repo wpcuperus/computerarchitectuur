@@ -19,6 +19,7 @@ function generateWeek5Questions() {
   questions.push({
     title: 'Stack Opslaan',
     label: html,
+    categories: ['Stack storage', 'RISC-V'],
     answer: correctAnswer,
     correctAnswers: [correctAnswer, altAnswer],
     explanation: explanation,
@@ -53,6 +54,7 @@ function generateWeek5Questions() {
     questions.push({
       title: 'Stack Pointer Aanpassing',
       label: html,
+      categories: ['Stack storage', 'RISC-V'],
       answer: correctAnswer,
       correctAnswers: [correctAnswer, altAnswer],
       explanation: explanation,
@@ -92,6 +94,7 @@ function generateWeek5Questions() {
       title: 'Leaf Procedure Calls',
       label: html,
       answer: correctAnswer,
+      categories: ['Leaf procedures', 'RISC-V'],
       correctAnswers: [correctAnswer.toLowerCase(), correctAnswer.toUpperCase()],
       explanation: explanation,
     });
@@ -164,6 +167,7 @@ const correctAnswers = [
 questions.push({
   title: 'Non-Leaf Procedure Stack Verantwoordelijkheden',
   label: html,
+  categories: ['Non-leaf procedures', 'RISC-V'],
   answer: correctAnswer,
   correctAnswers: correctAnswers,
   explanation: explanation

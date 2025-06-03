@@ -80,6 +80,7 @@ function generateWeek3Questions() {
     questions.push({
       title: 'Logische schakeling met 2 inputs',
       label: html,
+      categories: ['Waarheidstabellen', 'Gates'],
       answer: answer,
       correctAnswers: [answer]
     });
@@ -198,6 +199,7 @@ function generateWeek3Questions() {
     questions.push({
       title: 'Logische schakeling met 3 inputs',
       label: html,
+      categories: ['Waarheidstabellen', 'Gates'],
       answer: answer,
       correctAnswers: [answer]
     });
@@ -250,6 +252,7 @@ function generateWeek3Questions() {
     questions.push({
       title: '4-naar-1 Multiplexor',
       label: html,
+      categories: ['Multiplexors', 'Selectors'],
       answer: answer,
       correctAnswers: [answer]
     });
@@ -292,6 +295,7 @@ function generateWeek3Questions() {
   questions.push({
     title: 'Geheugenschakeling met SR Latch',
     label: html,
+    categories: ['Latches'],
     answer: answer,
     correctAnswers: [answer]
   });
@@ -379,6 +383,7 @@ function generateWeek3Questions() {
   questions.push({
     title: 'Expressies vergelijken met De Morgan',
     label: html,
+    categories: ['Waarheidstabellen'],
     answer: answer,
     correctAnswers: [answer]
   });
@@ -448,6 +453,7 @@ function generateWeek3Questions() {
   questions.push({
     title: 'Verkeerslicht met 2-naar-4 decoder',
     label: html,
+    categories: ['Latches'],
     answer: answer,
     correctAnswers: [answer]
   });
@@ -511,6 +517,7 @@ Dit betekent: als de klok-ingang <code>CLK</code> van 0 naar 1 gaat, dan wordt Q
   questions.push({
     title: 'Flip-flop met kloksignaal | Tabel aanvullen',
     label: html,
+    categories: ['Flip-flops'],
     answer: answer,
     correctAnswers: [answer]
   });
@@ -536,6 +543,7 @@ Dit betekent: als de klok-ingang <code>CLK</code> van 0 naar 1 gaat, dan wordt Q
   questions.push({
     title: 'Flip-flop met kloksignaal | Output per tijdstip',
     label: html,
+    categories: ['Flip-flops'],
     answer: correctVariants[0],
     correctAnswers: correctVariants
   });

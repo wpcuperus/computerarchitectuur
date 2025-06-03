@@ -66,6 +66,7 @@ function generateHexToDecimalQuestion() {
     id: 'hex-to-decimal',
     title: 'Hexadecimale conversie',
     label: `Zet het hexadecimale getal ${hex} om naar decimaal:`,
+    categories: ['Talstelsels'],
     hint: hint,
     answer: parseInt(hex, 16),
     explanation: `Het hexadecimale getal ${hex} is gelijk aan ${parseInt(hex, 16)} in decimaal.`
@@ -79,6 +80,7 @@ function generateBinToDecimalQuestion() {
     id: 'bin-to-decimal',
     title: 'Binaire conversie',
     label: `Zet het binaire getal ${bin} om naar decimaal:`,
+    categories: ['Talstelsels'],
     hint: `${bin.split('').map((bit, index) => `${bit} * 2^${bin.length - index - 1}`).join(' + ')} = ?`,
     answer: parseInt(bin, 2),
     explanation: `Het binaire getal ${bin} is gelijk aan ${parseInt(bin, 2)} in decimaal.`
@@ -92,6 +94,7 @@ function generateOctToDecimalQuestion() {
     id: 'oct-to-decimal',
     title: 'Octale conversie',
     label: `Zet het octale getal ${oct} om naar decimaal:`,
+    categories: ['Talstelsels'],
     hint: `${oct.split('').map((digit, index) => `${digit} * 8^${oct.length - index - 1}`).join(' + ')} = ?`,
     answer: parseInt(oct, 8),
     explanation: `Het octale getal ${oct} is gelijk aan ${parseInt(oct, 8)} in decimaal.`
@@ -105,6 +108,7 @@ function generateCustomToDecimalQuestion() {
     id: 'custom-to-decimal',
     title: 'Conversie naar aangepast talstelsel',
     label: `Zet het getal ${custom} van het ${base}-tallige stelsel om naar decimaal:`,
+    categories: ['Talstelsels'],
     hint: `${custom.split('').map((digit, index) => `${digit} * ${base}^${custom.length - index - 1}`).join(' + ')} = ?`,
     answer: parseInt(custom, base),
     explanation: `Het getal ${custom} in het ${base}-tallige stelsel is gelijk aan ${parseInt(custom, base)} in decimaal.`
@@ -117,6 +121,7 @@ function generateBinToHexQuestion() {
     id: 'bin-to-hex',
     title: 'Binaire conversie naar hexadecimaal',
     label: `Zet het binaire getal ${bin} om naar hexadecimaal:`,
+    categories: ['Talstelsels'],
     hint: `Splits het binaire getal in groepen van 4 bits: ${bin.padStart(Math.ceil(bin.length / 4) * 4, '0')}.<br>Converteer elke groep naar hexadecimaal.`,
     answer: binaryToHex(bin),
     explanation: `Het binaire getal ${bin} is gelijk aan ${parseInt(bin, 2)} in decimaal, wat ${binaryToHex(bin)} is in hexadecimaal.`
@@ -130,6 +135,7 @@ function generateOctToHexQuestion() {
     id: 'oct-to-hex',
     title: 'Octale conversie naar hexadecimaal',
     label: `Zet het octale getal ${oct} om naar hexadecimaal:`,
+    categories: ['Talstelsels'],
     hint: 'Converteer eerst de octale cijfers ' + oct.split('') + ' naar binair.<br>Converteer vervolgens de binaire groepen naar hexadecimaal.',
     answer: octToHex(oct),
     explanation: `Het octale getal ${oct} is gelijk aan ${parseInt(oct, 8)} in decimaal, wat ${octToHex(oct)} is in hexadecimaal.`
@@ -142,6 +148,7 @@ function generateDecToHexQuestion() {
     id: 'dec-to-hex',
     title: 'Decimale conversie naar hexadecimaal',
     label: `Zet het decimale getal ${dec} om naar hexadecimaal:`,
+    categories: ['Talstelsels'],
     hint: `Gebruik de deling door 16 methode: ${dec} / 16 = ?<br>Neem de rest en deel het resultaat opnieuw door 16.`,
     answer: decimalToHex(dec),
     explanation: `Het decimale getal ${dec} is gelijk aan ${decimalToHex(dec)} in hexadecimaal.`
@@ -156,6 +163,7 @@ function generateBinaryMultiplicationQuestion() {
     id: 'bin-multiplication',
     title: 'Binaire vermenigvuldiging',
     label: `Wat is ${bin1} × ${bin2} (binair)?`,
+    categories: ['Binair rekenen'],
     hint: 'Het is mogelijk om van de vermenigvuldigingssom een optelling te maken met binaire getallen, bijvoorbeeld: 1010 * 1101 = 1010 + 10100 + 000000 + 1010000.',
     answer: decimalToBinary(result),
     explanation: `Het binaire getal ${bin1} is ${parseInt(bin1, 2)} en ${bin2} is ${parseInt(bin2, 2)}. Hun product is ${result}, wat binair ${decimalToBinary(result)} is.`
@@ -168,6 +176,7 @@ function generateBinaryAdditionQuestion() {
   return {
     id: 'binary-addition',
     title: 'Binaire optelling',
+    categories: ['Binair rekenen'],
     label: `Wat is ${toBinary8Bits(val1)} + ${toBinary8Bits(val2)} (binair)?`,
     answer: decimalToBinary(val1 + val2),
     explanation: `Som van ${val1} en ${val2} is ${val1 + val2}, oftewel ${decimalToBinary(val1 + val2)} in binair.`
@@ -181,6 +190,7 @@ function generateBinarySubtractionQuestion() {
   return {
     id: 'binary-subtraction',
     title: 'Binaire aftrekking',
+    categories: ['Binair rekenen'],
     label: `Wat is ${toBinary8Bits(val1)} - ${toBinary8Bits(val2)} (binair)?`,
     answer: decimalToBinary(diff),
     explanation: `Verschil is ${diff}, oftewel ${decimalToBinary(diff)} in binair.`
@@ -194,6 +204,7 @@ function generateHexAdditionQuestion() {
   return {
     id: 'hex-addition',
     title: 'Hexadecimale optelling',
+    categories: ['Talstelsels'],
     label: `Wat is ${a} + ${b} (hexadecimaal)?`,
     answer: decimalToHex(sum),
     explanation: `${a} + ${b} = ${sum} decimaal = ${decimalToHex(sum)} hex.`
@@ -207,6 +218,7 @@ function generateHexSubtractionQuestion() {
   return {
     id: 'hex-subtraction',
     title: 'Hexadecimale aftrekking',
+    categories: ['Talstelsels'],
     label: `Wat is ${a} - ${b} (hexadecimaal)?`,
     answer: decimalToHex(diff),
     explanation: `${a} - ${b} = ${diff} decimaal = ${decimalToHex(diff)} hex.`
@@ -220,6 +232,7 @@ function generateOctalAdditionQuestion() {
   return {
     id: 'octal-addition',
     title: 'Octale optelling',
+    categories: ['Talstelsels'],
     label: `Wat is ${a.toString(8)} + ${b.toString(8)} (octaal)?`,
     answer: sum.toString(8),
     explanation: `${a} + ${b} = ${sum} decimaal = ${sum.toString(8)} octaal.`
@@ -232,6 +245,7 @@ function generateOctalSubtractionQuestion() {
   return {
     id: 'octal-subtraction',
     title: 'Octale aftrekking',
+    categories: ['Talstelsels'],
     label: `Wat is ${a.toString(8)} - ${b.toString(8)} (octaal)?`,
     answer: (a - b).toString(8)
   };
@@ -258,6 +272,7 @@ function generateSubnetQuestion() {
   return {
     id: 'subnet-question',
     title: 'IP-adressen en subnetten',
+    categories: ['Binair rekenen'],
     label: `Adres A: ${ipA.join('.')}<br>Adres B: ${ipB.join('.')}<br>Masker: ${mask.join('.')}<br><strong>Behoren deze IP-adressen tot dezelfde reeks?</strong><br><em>(Antwoord: "juist" of "onjuist")</em>`,
     hint: `Gebruik AND om de netwerken te vergelijken met het masker: ${mask.join('.')}.`,
     answer: correct,
@@ -290,6 +305,7 @@ function generateBaseAdditionToHexQuestion() {
   return {
     id: 'base-addition',
     title: `Optelling in een aangepast talstelsel`,
+    categories: ['Talstelsels'],
     label: `Tel de getallen ${val1Base} en ${val2Base} (beide getallen behoren tot het ${base}-tallig stelsel) op en geef het resultaat als hexadecimaal getal:`,
     hint: hint,
     answer: `0x${sumHex}`,

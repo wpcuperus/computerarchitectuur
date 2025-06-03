@@ -36,3 +36,15 @@ input {
 #score {
   min-height: 4em; /* of meer, afhankelijk van je score-output */
 }
+
+.category-filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem;
+  margin-bottom: 1rem;
+}
+
+.category-checkbox {
+  flex: 1 1 calc(50.0% - 1rem);
+  min-width: 150px;
+}

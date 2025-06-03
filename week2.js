@@ -50,6 +50,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (4-bits) Optelling',
     label: `Wat is ${a} + ${b} in two's complement (4 bits)?`,
+    categories: ['Two\'s Complement', 'Signed en Unsigned Getallen'],
     hint: `Zet de two\'s complement getallen om naar decimaal door "1" af te trekken en dan het getal om te keren. Voer daarna de berekening uit en zet het resultaat weer om naar two's complement.`,
     answer: result.toString(),
     binaryAnswer
@@ -64,6 +65,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (4-bits) Aftrekking',
     label: `Wat is ${a} - ${b} in two's complement (4 bits)?`,
+    categories: ['Two\'s Complement', 'Signed en Unsigned Getallen'],
     hint: `Zet de two\'s complement getallen eerst om naar decimaal, door "1" af te trekken en dan het getal om te keren. Voer daarna de berekening uit en zet het resultaat weer om naar two's complement.`,
     answer: result.toString(),
     binaryAnswer
@@ -78,6 +80,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (8-bits) Optelling',
     label: `Wat is ${a} + ${b} in two's complement (8 bits)?`,
+    categories: ['Two\'s Complement', 'Signed en Unsigned Getallen'],
     hint: `Zet de two\'s complement getallen eerst om naar decimaal, door "1" af te trekken en dan het getal om te keren. Voer daarna de berekening uit en zet het resultaat weer om naar two's complement.`,
     answer: result.toString(),
     binaryAnswer
@@ -92,6 +95,7 @@ function generateWeek2Questions() {
   questions.push({
     title: 'Two\'s Complement (8-bits) Aftrekking',
     label: `Wat is ${a} - ${b} in two's complement (8 bits)?`,
+    categories: ['Two\'s Complement', 'Signed en Unsigned Getallen'],
     hint: `Zet de two\'s complement getallen eerst om naar decimaal, door "1" af te trekken en dan het getal om te keren. Voer daarna de berekening uit en zet het resultaat weer om naar two's complement.`,
     answer: result.toString(),
     binaryAnswer
@@ -122,6 +126,7 @@ const correctFloat = parseFloat(floatVal).toString();
 questions.push({
   title: 'Hex naar IEEE 754 floating point',
   label: `Welk decimaal getal hoort bij het IEEE 754 hexadecimale getal 0x${hex}? (Je mag een punt of komma als decimaalteken gebruiken)`,
+  categories: ['Floating Point'],
   hint: `Converteer eerst de hexadecimale waarde 0x${hex} naar een IEEE 754 (32-bit single precision) floating point getal. Een floating point getal heeft de volgende formule: tekenbit * mantisse * 2^exponent. De exponent is een gebiaste waarde.`,
   answer: correctFloat,
   correctAnswers: [correctFloat, correctFloat.replace('.', ',')]
@@ -154,6 +159,7 @@ const hexStr = hex.toUpperCase();
 questions.push({
   title: 'IEEE 754 floating point naar hexadecimaal',
   label: `Wat is de IEEE 754 (32-bit single precision) hexadecimale representatie van ${floatVal}? (Je mag het antwoord met of zonder "0x" prefix geven)`,
+  categories: ['Floating Point'],
   answer: `0x${hexStr}`,
   correctAnswers: [`0x${hexStr}`, hexStr]
 });
@@ -186,7 +192,7 @@ const floatStr = floatVal.toString();
 questions.push({
   title: 'IEEE 754 floating point naar decimaal',
   label: `Converteer het volgende IEEE 754 (single-precision binary) floating-point getal naar een zo kort mogelijk decimaal getal:<br>${binary}<br>(Je mag een punt of komma als decimaalteken gebruiken)`,
-  
+  categories: ['Floating Point'],
   answer: floatStr,
   correctAnswers: [floatStr, floatStr.replace('.', ',')]
 });
@@ -206,6 +212,7 @@ const convValue = Math.floor(rng() * (maxVal - minVal + 1)) + minVal;
 questions.push({
   title: 'Decimaal naar Two\'s Complement',
   label: `Zet het decimale getal ${convValue} om naar een two's complement getal van ${convBits} bits:`,
+  categories: ['Two\'s Complement', 'Signed en Unsigned Getallen'],
   hint: `Stap 1: Bepaal of het getal ${convValue} positief of negatief is. Stap 2: Zet het absolute waarde om naar binair. Stap 3: Als het getal negatief is, pas two\'s complement toe door alle bits om te keren en 1 op te tellen.`,
   answer: convValue.toString(),
   binaryAnswer: toTwosComplementBinary(convValue, convBits)
@@ -265,6 +272,7 @@ questions.push({
     title: 'IEEE Floating Point Vermenigvuldiging',
     label: `Stel een IEEE floating point getal wordt vermenigvuldigd met ${factor}. Wat verandert er dan in de IEEE floating point notatie van het getal?<br>Antwoord met tekenbit, exponent en/of mantisse`,
     hint: `Denk na over hoe vermenigvuldiging met ${factor} de waarde van een getal beïnvloedt. Welke delen van de IEEE notatie (tekenbit, exponent, mantisse) worden aangepast?`,
+    categories: ['Floating Point'],
     answer: selectedType,
     explanation: `Deze factor (${factor}) zorgt voor verandering in: ${selectedType}`
   });

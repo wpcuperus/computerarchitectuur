@@ -69,6 +69,7 @@ questions.push({
   title: 'Bit in Register Instellen',
   label: html,
   answer: correctLabel,
+  categories: ['RISC-V', 'Bitwise Operators'],
   correctAnswers: [correctLabel],
   explanation: uitleg
 });
@@ -156,6 +157,7 @@ label: `
 <p><strong>Welke notatiewijze wordt gebruikt door de processor?</strong></p>
 <p>(Typ: <code>Little Endian</code> of <code>Big Endian</code>)</p>`,
       answer: endianText,
+      categories: ['RISC-V', 'Endianness'],
       correctAnswers: [endianText],
       explanation: explanation.trim()
     });
@@ -338,6 +340,7 @@ Gebaseerd op de opcode en funct-velden volgens de RISC-V instructietabel.`;
 questions.push({
   title: 'RISC-V Instructie Decoderen op basis van instructiegeheugen',
   label: questionText,
+  categories: ['RISC-V'],
   answer: isRType
     ? `${instr.mnemonic} x${rd}, x${rs1}, x${rs2}`
     : `${instr.mnemonic} x${rd}, x${rs1}, ${imm}`,
@@ -399,6 +402,7 @@ Dit is precies hoe RISC-V instructies in assembler worden geschreven: <code>${co
     title: 'RISC-V Instructie Decoderen op basis van tabel',
     label: html,
     answer: correctAnswer,
+    categories: ['RISC-V'],
     correctAnswers: [correctAnswer],
     explanation: uitleg.trim()
   });
@@ -465,6 +469,7 @@ Geef het antwoord als volgt: 0x45, 0xBB, 0x12</p>
   questions.push({
     title: 'RISC-V Instructie Uitkomst Bepalen',
     label: html,
+    categories: ['RISC-V'],
     answer: correctAnswer,
     correctAnswers: [correctAnswer],
     explanation: uitleg
@@ -549,6 +554,7 @@ Geef het antwoord als volgt: 0x45, 0xBB, 0x12</p>
   questions.push({
     title: 'Branch Target Bepalen',
     label: html,
+    categories: ['RISC-V', 'Branching'],
     answer: jumpTargetLabel,
     correctAnswers: [jumpTargetLabel],
     explanation: uitleg

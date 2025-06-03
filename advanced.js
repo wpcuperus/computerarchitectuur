@@ -14,10 +14,64 @@ function loadAllQuestions() {
   ];
 }
 
+function getUniqueCategories() {
+  const categorySet = new Set();
+  allQuestions.forEach(q => {
+    if (Array.isArray(q.categories)) {
+      q.categories.forEach(cat => categorySet.add(cat));
+    }
+  });
+  return Array.from(categorySet).sort();
+}
+
+
 // Toon de checkboxen
 function displayQuestionSelection() {
   const container = document.getElementById('question-selection');
   container.innerHTML = '';
+
+  // Voeg categorie-filter toe
+const uniqueCategories = getUniqueCategories();
+const filterDiv = document.createElement('div');
+filterDiv.id = 'category-filter';
+filterDiv.innerHTML = `
+  <div style="margin-bottom: 0.5rem;"><strong>Filter op categorieën:</strong></div>
+  <div style="margin-bottom: 0.5rem;">
+    <label><input type="checkbox" id="select-all-categories" checked /> Selecteer alle categorieën</label>
+  </div>
+`;
+
+const catContainer = document.createElement('div');
+catContainer.className = 'category-filter-container';
+
+uniqueCategories.forEach(cat => {
+  const id = `cat-${cat}`;
+  const label = document.createElement('label');
+  label.className = 'category-checkbox';
+  label.innerHTML = `
+    <input type="checkbox" class="category-filter" value="${cat}" checked />
+    ${cat}
+  `;
+  catContainer.appendChild(label);
+});
+filterDiv.appendChild(catContainer);
+
+container.appendChild(filterDiv);
+
+document.getElementById('select-all-categories').addEventListener('change', (e) => {
+  const checked = e.target.checked;
+  document.querySelectorAll('.category-filter').forEach(cb => {
+    cb.checked = checked;
+  });
+  filterQuestionsByCategory();
+});
+
+
+// Event listener voor filtering
+container.querySelectorAll('.category-filter').forEach(cb => {
+  cb.addEventListener('change', () => filterQuestionsByCategory());
+});
+
 
   const grouped = {};
 
@@ -38,15 +92,20 @@ function displayQuestionSelection() {
     week3: "Week 3: Logische schakelingen (theorie)",
     week4: "Week 4: Basic Assembly (theorie)",
     week5: "Week 5: Advanced Assembly (theorie)",
-    week6: "Week 6: Processor en optimalisatie (theorie)"
+    week6: "Week 6: Processor en optimalisatie (sommen)"
   };
+
+    const questionListTitle = document.createElement('h3');
+questionListTitle.textContent = 'Selecteer de vragen:';
+questionListTitle.style.marginTop = '2rem';
+container.appendChild(questionListTitle);
 
   // Globale selecteer alles checkbox
   const selectAllDiv = document.createElement('div');
   selectAllDiv.innerHTML = `
     <label>
       <input type="checkbox" id="select-all" checked />
-      <strong>Selecteer alles</strong>
+      Selecteer alle vragen
     </label>
   `;
   container.appendChild(selectAllDiv);
@@ -57,6 +116,7 @@ function displayQuestionSelection() {
       cb.checked = checked;
     });
   });
+
 
   // Per week
   sortedWeeks.forEach(week => {
@@ -74,13 +134,13 @@ function displayQuestionSelection() {
     section.appendChild(weekHeader);
 
     // Vragen per week
-grouped[week].forEach(({ title, index }) => {
+grouped[week].forEach(({ title, index, categories }) => {
   const div = document.createElement('div');
   div.className = 'question-select';
   div.innerHTML = `
     <label>
       <input type="checkbox" data-index="${index}" checked class="week-checkbox-${week}" />
-      ${title}
+      ${title} (${categories.join(', ')})
     </label>
   `;
   section.appendChild(div);
@@ -162,3 +222,15 @@ window.onload = () => {
   displayQuestionSelection();
   document.getElementById('generate-button').onclick = generateCustomQuiz;
 };
+
+function filterQuestionsByCategory() {
+  const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked')).map(cb => cb.value);
+
+  allQuestions.forEach((q, index) => {
+    const element = document.querySelector(`[data-index="${index}"]`)?.closest('.question-select');
+    if (!element) return;
+
+    const matchesCategory = q.categories?.some(cat => selectedCategories.includes(cat));
+    element.style.display = matchesCategory ? '' : 'none';
+  });
+}

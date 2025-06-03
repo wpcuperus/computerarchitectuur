@@ -16,6 +16,7 @@ function generateWeek6Questions() {
       title: 'Tag-bits in direct-mapped cache',
       label: `Gegeven is een direct-mapped cache voor een systeem met ${sizeMiB.toFixed(0)}MiB adressen. Op elk adres kan 1 byte aan data worden opgeslagen. De cache heeft 512 regels (elke regel: valid-bit + tag + data).<br>Uit hoeveel bits bestaat het tag-veld van elke regel in de cache?`,
       hint: `Bepaal het totaal aantal bits voor een adres (op basis van de geheugengrootte), trek daar het aantal indexbits af (log₂(aantal cacheregels)) en trek eventueel offsetbits af als een cache-regel meerdere bytes bevat.`,
+      categories: ['Caching'],
       answer: tagBits,
       explanation: `${sizeMiB} MiB = 2^${addressBits} adressen = ${addressBits} adresbits. Cache: 512 regels = 2^${indexBits} → indexbits = ${indexBits}. Geen offsetbits. tag = ${addressBits} - ${indexBits} = ${tagBits}.`
     });
@@ -33,6 +34,7 @@ function generateWeek6Questions() {
       title: 'Gemiddelde toegangstijd tot geheugen (AMAT)',
       label: `Gegeven met een processor met de volgende gegevens:<br>• ${nsPerCycle} nanoseconde per clock-cycle<br>• cache hit access time = 1 clock-cycle<br>• cache miss penalty = ${missPenalty} clock-cycles<br>• cache miss ratio = ${missRatio}%<br>Wat is de gemiddelde access tijd tot het geheugen?`,
       hint: `Gebruik de formule: AMAT = (1 + miss ratio × miss penalty) × tijd per clock-cycle. Vergeet niet om miss ratio in decimale vorm te gebruiken (bijv. 20% = 0.20).`,      
+      categories: ['Caching'],
       answer: `${Math.round(amat)} ns`,
       explanation: `AMAT = (1 + ${missRatio / 100} * ${missPenalty}) × ${nsPerCycle} = ${amat.toFixed(2)} ns`
     });
@@ -49,6 +51,7 @@ function generateWeek6Questions() {
       title: 'Maximaal adresseren geheugen',
       label: `Een processor maakt gebruik van een ${addressBits} bits adresbus en een ${dataBits} bits databus. Hoeveel geheugen in KiB (kibibyte) kan men maximaal adresseren?`,
       hint: `Gebruik 2^adresbits om te berekenen hoeveel geheugenadressen beschikbaar zijn. Elk adres vertegenwoordigt 1 byte. Deel het totaal door 1024 om naar KiB om te rekenen.`,
+      categories: ['Datapath'],
       answer: `${kib} KiB`,
       explanation: `${addressBits} bits adresbus = 2^${addressBits} = ${bytes} bytes → ${kib} KiB`
     });
@@ -63,6 +66,7 @@ function generateWeek6Questions() {
     questions.push({
       title: 'Teller reset tijd',
       label: `Neem aan dat de systeemklok een frequentie heeft van ${freq / 1e6} MHz. We maken gebruik van een teller die wordt ingesteld met een startwaarde. Elke klokperiode wordt de teller met 1 verlaagd. Als de teller 0 bereikt wordt hij gereset naar de startwaarde. De startwaarde wordt ingesteld op ${startVal}.<br>Hoe lang duurt het voordat de teller wordt gereset?`,
+      categories: ['Pipelining'],
       hint: `De duur van één klokperiode is 1 / frequentie. Vermenigvuldig dat met de startwaarde om de tijd tot reset te vinden. Vermenigvuldig eventueel met 1000 voor milliseconden.`,      
       answer: `${duration.toFixed(2)} ms`,
       explanation: `1 klokperiode = 1/${freq} s. Reset = ${startVal} × (1/${freq}) = ${duration} ms`
@@ -79,6 +83,7 @@ function generateWeek6Questions() {
       title: 'Hoogste geheugenadres in hexadecimaal',
       label: `Een geheugenkaart maakt gebruik van een databus van 8 bits en een adresbus van ${addressBits} bits. Het geheugen is byte addresseerbaar. Wat is het hoogste geheugenadres uitgedrukt als hexadecimaal getal?`,
       hint: `Bepaal het hoogste adres als 2^adresbits - 1. Zet dit getal om naar hexadecimale notatie (bijv. met .toString(16)).`,
+      categories: ['Datapath'],
       answer: hexAddr,
       explanation: `${addressBits} bits → hoogste adres = 2^${addressBits} - 1 = ${maxAddress} = ${hexAddr}`
     });
@@ -98,6 +103,7 @@ function generateWeek6Questions() {
       title: 'Vergelijking Atmel en Interchip processors',
       label: `De firma Atmel biedt 8-bits RISC-processoren aan waarbij alle instructies in één klokperiode worden uitgevoerd. De frequentie is ${atmelFreq / 1e6} MHz.<br>De firma Interchip biedt een 8-bits platform aan waarbij elke instructie 4 klokperiodes duurt, met een frequentie van ${interchipFreq / 1e6} MHz.<br>Welk van deze beide processors verwerkt meer instructies per seconde?`,
       hint: `Bereken het aantal instructies per seconde (IPS) voor beide processoren. IPS = frequentie / cycli per instructie. Vergelijk de uitkomsten.`,
+      categories: ['Datapath'],
       answer: winner,
       explanation: `Atmel: ${atmelFreq / 1e6}M / 1 = ${atmelIPS} IPS<br>Interchip: ${interchipFreq / 1e6}M / 4 = ${interchipIPS} IPS<br>→ ${winner} is sneller`
     });
@@ -128,6 +134,7 @@ function generateWeek6Questions() {
 Het programma wordt uitgevoerd door een processor met pipelining en forwarding. In hoeveel klokcycli wordt dit programma uitgevoerd nadat het datasegment geladen is?`,
       hint: `Tel het aantal instructies (denk aan pseudo-instructies die meerdere echte instructies zijn) en bepaal hoeveel klokcycli het duurt met pipelining. Voeg de afrondingstijd voor de laatste instructie toe.`,
       answer: `${totalCycles}`,
+      categories: ['Pipelining'],
       explanation: `De 'la' pseudo-instructie bestaat uit 2 instructies. Er zijn dus 12 instructies. Zonder stalls duurt het 12 cycles om de laatste instructie te starten (IF), daarna nog 4 cycles om af te ronden. Dus totaal 16 clockcycles.`
     });
   }
@@ -146,6 +153,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
       label: `Een embedded computersysteem heeft ${chipCount} geheugenchip${chipCount > 1 ? 's' : ''} van elk ${chipSizeKiB} KiB.<br>Hoeveel adreslijnen heb je nodig om elke byte in elke chip aan te kunnen spreken?`,
       hint: `Bereken de totale geheugengrootte in bytes door het aantal chips × de grootte per chip. Bereken daarna log₂(totaal aantal bytes) om het benodigde aantal adreslijnen te vinden.`,
       answer: `${addressLines}`,
+      categories: ['Datapath'],
       explanation: `${chipCount} × ${chipSizeKiB} KiB = ${totalBytes} bytes totaal → log₂(${totalBytes}) = ${addressLines} adreslijnen nodig`
     });
   }
@@ -161,6 +169,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
       label: `Een geheugenkaart bevat ${sizeMB} MB geheugenadressen, hoeveel adreslijnen zijn nodig om dit geheugen te adresseren?`,
       hint: `Gebruik de formule log₂(geheugengrootte in bytes) om het aantal adreslijnen te berekenen. Voorbeeld: log₂(1024) = 10 (2^10 = 1024), dus 10 bits zijn nodig om 1024 adressen aan te duiden.`,
       answer: `${addressLines}`,
+      categories: ['Datapath'],
       explanation: `${sizeMB} MB = ${sizeBytes.toLocaleString()} bytes. Aantal bits om elk uniek adres aan te wijzen = log₂(${sizeBytes}) = ${addressLines} bits.`
     });
   }
@@ -189,6 +198,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
       label: `Gegeven een videoframe van ${width}×${height} beeldpunten (pixels). Elk beeldpunt heeft ${numColors} kleur(en). Elke kleur kent ${shadesPerColor} tinten. Dit videoframe wordt ongecomprimeerd over een netwerk verstuurd. <br> Hoeveel bytes worden er dan minimaal verzonden?`,
       hint: `Bereken eerst het aantal pixels (breedte × hoogte). Bepaal hoeveel bits elke pixel nodig heeft (aantal kleuren × log₂(aantal tinten)). Vermenigvuldig en deel het totaal door 8 om naar bytes om te rekenen.`,
       answer: `${totalBytes}`,
+      categories: ['Datapath'],
       explanation: `${width} × ${height} = ${width * height} pixels. Elk pixel heeft ${numColors} kleur(en) met ${shadesPerColor} tinten, dus ${bitsPerPixel} bits per pixel. Totaal: ${totalBits} bits = ${totalBytes} bytes.`
     });
   }
@@ -210,6 +220,7 @@ Het programma wordt uitgevoerd door een processor met pipelining en forwarding. 
       label: `Gegeven een systeem met een woordbreedte van 1 byte, een (maximaal) geheugen van ${memoryMB} MB en een cache van ${cacheKB} KB. <br> Bij direct mapped cache, hoeveel bits is het tag-veld van dit systeem?`,
       hint: `Bepaal het aantal adresbits door log₂(geheugengrootte in bytes), en het aantal indexbits door log₂(aantal cachelijnen). Trek die bij elkaar af (en eventueel offsetbits) om de taggrootte te bepalen.`,      
       answer: `${tagBits}`,
+      categories: ['Caching'],
       explanation: `Geheugen: ${memoryBytes.toLocaleString()} bytes → ${addressBits} adresbits.<br>Cache met ${cacheKB} KB = ${cacheLines} regels → ${indexBits} indexbits.<br>Tag = ${addressBits} - ${indexBits} - ${offsetBits} = ${tagBits} bits.`
     });
   }
