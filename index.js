@@ -59,6 +59,7 @@ function generateSeed(selectedWeeks) {
     if (week === 'week5') weekFlags |= 1 << 4;
     if (week === 'week6') weekFlags |= 1 << 5;
     if (week === 'week2theorie') weekFlags |= 1 << 6;
+    if (week === 'week6theorie') weekFlags |= 1 << 7;
   });
 
   return `${baseSeed}-${weekFlags}`;

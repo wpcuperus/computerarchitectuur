@@ -24,7 +24,8 @@ function loadAllQuestions() {
     ...generateWeek3Questions(),
     ...generateWeek4Questions(),
     ...generateWeek5Questions(),
-    ...generateWeek6Questions()
+    ...generateWeek6Questions(),
+    ...generateWeek6TheoryQuestions()
   ];
 }
 
@@ -90,18 +91,26 @@ window.onload = generateQuiz;
 
 function regenerateQuiz() {
   const params = new URLSearchParams(window.location.search);
-  const seed = Math.floor(Math.random() * 1_000_000); // nieuw seed
-  const indices = params.get("indices");
+  const oldIndices = params.get("indices");
+  if (!oldIndices) return;
 
-  // Zorg ervoor dat indices geldig zijn
-  if (!indices) {
-    alert("Geen vragen geselecteerd.");
-    return;
+  const indexArray = oldIndices.split(',').map(Number);
+  
+  // Hershuffelen met dezelfde of een nieuwe seed
+  const newSeed = Math.floor(Math.random() * 1_000_000);
+  const rng = mulberry32(newSeed);
+
+  // Shuffle functie
+  for (let i = indexArray.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [indexArray[i], indexArray[j]] = [indexArray[j], indexArray[i]];
   }
 
-  // Redirect met nieuw seed maar dezelfde indices
-  window.location.href = `advancedquiz.html?seed=${seed}&indices=${indices}`;
+  // Nieuwe URL met nieuwe seed en gehusselde indices
+  const newIndices = indexArray.join(',');
+  window.location.search = `?seed=${newSeed}&indices=${newIndices}`;
 }
+
 
 function showHint(index) {
   const hintContainer = document.getElementById(`hint-${index}`);

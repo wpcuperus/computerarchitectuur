@@ -13,10 +13,17 @@ function getQueryParams() {
 
   // Decodeer de weekinformatie
   const weeks = [];
-  for (let i = 0; i < 7; i++) {  // nu 7 bits i.p.v. 6
+  for (let i = 0; i < 8; i++) {  // nu 7 bits i.p.v. 6
     if (weekFlags & (1 << i)) {
-      weeks.push(`week${i === 6 ? '2theorie' : i + 1}`);
-    }
+  if (i === 6) {
+    weeks.push('week2theorie'); // bestaande mapping
+  } else if (i === 7) {
+    weeks.push('week6theorie'); // nieuwe mapping
+  } else {
+    weeks.push(`week${i + 1}`);
+  }
+}
+
   }
 
 
@@ -62,6 +69,9 @@ function generateQuiz() {
   }
   if (selectedWeeks.includes('week6')) {
     questions = questions.concat(generateWeek6Questions()); // Voeg week 6 vragen toe
+  }
+  if (selectedWeeks.includes('week6theorie')) {
+    questions = questions.concat(generateWeek6TheoryQuestions());
   }
 
   shuffleArray(questions);
@@ -173,6 +183,8 @@ function getWeekFlagsFromWeeks(weeks) {
     if (week === 'week4') weekFlags |= 1 << 3;
     if (week === 'week5') weekFlags |= 1 << 4;
     if (week === 'week6') weekFlags |= 1 << 5;
+    if (week === 'week2theorie') weekFlags |= 1 << 6; // Nieuwe week 2 theorie
+    if (week === 'week6theorie') weekFlags |= 1 << 7; // Nieuwe week 6 theorie
   });
   return weekFlags;
 }
@@ -201,7 +213,7 @@ window.onload = () => {
 
 function showHint(index) {
   const hintContainer = document.getElementById(`hint-${index}`);
-  const question = selectedQuestions[index];
+  const question = currentQuestions[index];
   if (hintContainer.innerHTML) {
     // Hint is al zichtbaar, verberg hem
     hintContainer.innerHTML = '';

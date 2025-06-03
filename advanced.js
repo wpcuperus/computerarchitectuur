@@ -10,6 +10,7 @@ function loadAllQuestions() {
     ...generateWeek4Questions().map(q => ({ ...q, week: 'week4' })),
     ...generateWeek5Questions().map(q => ({ ...q, week: 'week5' })),
     ...generateWeek6Questions().map(q => ({ ...q, week: 'week6' })),
+    ...generateWeek6TheoryQuestions().map(q => ({ ...q, week: 'week6theorie' }))
   ];
 }
 
@@ -87,7 +88,8 @@ function displayQuestionSelection() {
     week3: "Week 3: Logische schakelingen (theorie)",
     week4: "Week 4: Basic Assembly (theorie)",
     week5: "Week 5: Advanced Assembly (theorie)",
-    week6: "Week 6: Processor en optimalisatie (sommen)"
+    week6: "Week 6: Processor en optimalisatie (sommen)",
+    week6theorie: "Week 6: Processor en optimalisatie (theorie)"
   };
 
   const questionListTitle = document.createElement('h3');
