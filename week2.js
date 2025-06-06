@@ -15,6 +15,47 @@ function toTwosComplementBinary(value, bits) {
   return intVal.toString(2).padStart(bits, '0');
 }
 
+function generateIEEEExplanation(factor, changedParts) {
+  const example = 1.5;
+  const result = example * factor;
+
+  function floatToBinParts(f) {
+    const buffer = new ArrayBuffer(4);
+    const view = new DataView(buffer);
+    view.setFloat32(0, f);
+    const binary = [...Array(4)].map((_, i) =>
+      view.getUint8(i).toString(2).padStart(8, '0')).join('');
+    return {
+      binary,
+      sign: binary[0],
+      exponent: binary.slice(1, 9),
+      mantissa: binary.slice(9),
+    };
+  }
+
+  const before = floatToBinParts(example);
+  const after = floatToBinParts(result);
+
+  return `Deze factor (${factor}) zorgt voor verandering in: ${changedParts}.<br>
+
+**Voorbeeld:**
+Getal \`1.5\` in IEEE 754:<br>
+- Binair: \`${before.binary}\`<br>
+  - Tekenbit: \`${before.sign}\`<br>
+  - Exponent: \`${before.exponent}\`<br>
+  - Mantisse: \`${before.mantissa}\`<br><br>
+
+Na vermenigvuldiging met ${factor} → \`${result}\`:<br>
+
+- Binair: \`${after.binary}\`<br>
+  - Tekenbit: \`${after.sign}\`<br>
+  - Exponent: \`${after.exponent}\`<br>
+  - Mantisse: \`${after.mantissa}\`<br>
+
+💡 Verandering in: **${changedParts}**<br>
+`;
+}
+
 
 // Genereer vragen voor week 2 (Geheugenrepresentatie)
 function generateWeek2Questions() {
@@ -271,10 +312,10 @@ questions.push({
   questions.push({
     title: 'IEEE Floating Point Vermenigvuldiging',
     label: `Stel een IEEE floating point getal wordt vermenigvuldigd met ${factor}. Wat verandert er dan in de IEEE floating point notatie van het getal?<br>Antwoord met tekenbit, exponent en/of mantisse`,
-    hint: `Denk na over hoe vermenigvuldiging met ${factor} de waarde van een getal beïnvloedt. Welke delen van de IEEE notatie (tekenbit, exponent, mantisse) worden aangepast?`,
+    hint: `Denk na over hoe vermenigvuldiging met ${factor} de waarde van een getal beïnvloedt. Welke delen van de IEEE notatie (tekenbit, exponent, mantisse) worden aangepast als je een getal vermenigvuldigd met ${factor}?`,
     categories: ['Floating Point'],
     answer: selectedType,
-    explanation: `Deze factor (${factor}) zorgt voor verandering in: ${selectedType}`
+    explanation: generateIEEEExplanation(factor, selectedType)
   });
 }
 

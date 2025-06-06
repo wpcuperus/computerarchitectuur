@@ -184,9 +184,10 @@ function generateBinaryAdditionQuestion() {
 }
 
 function generateBinarySubtractionQuestion() {
-  const val1 = Math.floor(rng() * 256) + 128;
-  const val2 = Math.floor(rng() * 128);
-  const diff = Math.max(0, val1 - val2);
+  const val1 = Math.floor(rng() * 128) + 128; // 128–255
+  const val2 = Math.floor(rng() * val1);      // 0–val1-1, altijd kleiner
+
+  const diff = val1 - val2;
   return {
     id: 'binary-subtraction',
     title: 'Binaire aftrekking',
@@ -196,6 +197,7 @@ function generateBinarySubtractionQuestion() {
     explanation: `Verschil is ${diff}, oftewel ${decimalToBinary(diff)} in binair.`
   };
 }
+
 
 function generateHexAdditionQuestion() {
   const a = getRandomNumber(16).toUpperCase();
@@ -212,9 +214,16 @@ function generateHexAdditionQuestion() {
 }
 
 function generateHexSubtractionQuestion() {
-  const a = getRandomNumber(16).toUpperCase();
-  const b = getRandomNumber(16).toUpperCase();
-  const diff = Math.max(0, parseInt(a, 16) - parseInt(b, 16));
+  let a = getRandomNumber(16).toUpperCase();
+  let b = getRandomNumber(16).toUpperCase();
+
+  // Zorg dat a >= b
+  while (parseInt(b, 16) > parseInt(a, 16)) {
+    b = getRandomNumber(16).toUpperCase();
+  }
+
+  const diff = parseInt(a, 16) - parseInt(b, 16);
+
   return {
     id: 'hex-subtraction',
     title: 'Hexadecimale aftrekking',
@@ -224,6 +233,8 @@ function generateHexSubtractionQuestion() {
     explanation: `${a} - ${b} = ${diff} decimaal = ${decimalToHex(diff)} hex.`
   };
 }
+
+
 
 function generateOctalAdditionQuestion() {
   const a = Math.floor(rng() * 512);
@@ -240,16 +251,22 @@ function generateOctalAdditionQuestion() {
 }
 
 function generateOctalSubtractionQuestion() {
-  const a = Math.floor(rng() * 512);
-  const b = Math.floor(rng() * 512);
+  let a = Math.floor(rng() * 512);
+  let b = Math.floor(rng() * 512);
+
+  if (b > a) [a, b] = [b, a]; // zorg dat a >= b
+
+  const diff = a - b;
   return {
     id: 'octal-subtraction',
     title: 'Octale aftrekking',
     categories: ['Talstelsels'],
     label: `Wat is ${a.toString(8)} - ${b.toString(8)} (octaal)?`,
-    answer: (a - b).toString(8)
+    answer: diff.toString(8),
+    explanation: `${a.toString(8)} - ${b.toString(8)} = ${diff} decimaal = ${diff.toString(8)} octaal.`
   };
 }
+
 
 function generateSubnetQuestion() {
   const mask = [255, 255, 254, 0];
