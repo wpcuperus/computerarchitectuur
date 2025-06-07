@@ -148,19 +148,23 @@ function checkAnswers() {
 
   // Scroll naar de score
   scoreElement.scrollIntoView({ behavior: 'smooth' });
+
+  // ❗ Knop toevoegen voor heroefening van foute vragen
+  const buttonContainer = document.getElementById('retry-button-container') || document.createElement('div');
+  buttonContainer.id = 'retry-button-container';
+  buttonContainer.innerHTML = ''; // reset vorige inhoud
+
+  const retryButton = document.createElement('button');
+  retryButton.textContent = 'Oefen fout beantwoorde vragen opnieuw';
+  retryButton.style.marginTop = '1rem';
+  retryButton.onclick = () => regenerateFromWrongAnswers();
+
+  // Alleen tonen als er fouten zijn
+  if (score < currentQuestions.length) {
+    buttonContainer.appendChild(retryButton);
+    scoreElement.appendChild(buttonContainer);
+  }
 }
-
-
-  document.getElementById('score').textContent = `Je score: ${score} van de ${currentQuestions.length}`;
-  scoreShown = true;
-
-  // Scroll naar de onderkant van de pagina
-  window.scrollTo({
-    top: document.body.scrollHeight,
-    behavior: 'smooth'
-  });
-
-
 
 function regenerateQuiz() {
   // Genereer een nieuwe seed (zonder de weken te veranderen)
@@ -254,3 +258,36 @@ function checkSingleAnswer(index) {
     feedback.innerHTML = `❌ Fout. Het juiste antwoord is: ${correctAnswer}<br>${q.explanation || ''}`;
   }
 }
+
+function regenerateFromWrongAnswers() {
+  const wrongIndices = [];
+
+  currentQuestions.forEach((q, index) => {
+    const input = document.getElementById(`q${index}`).value.trim();
+    let correct = false;
+
+    if (q.binaryAnswer !== undefined) {
+      correct = input === q.binaryAnswer;
+    } else if (Array.isArray(q.correctAnswers)) {
+      correct = q.correctAnswers.some(ans => ans.toLowerCase() === input.toLowerCase());
+    } else {
+      correct = input.toLowerCase() === q.answer.toString().toLowerCase();
+    }
+
+    if (!correct) wrongIndices.push(index);
+  });
+
+  if (wrongIndices.length === 0) {
+    alert('Alle antwoorden zijn correct beantwoord!');
+    return;
+  }
+
+  // Encodeer fout beantwoorde vragen in de URL
+  const newSeed = Math.floor(Math.random() * 1_000_000);
+  const weekFlags = getWeekFlagsFromWeeks(selectedWeeks);
+  const encodedIndices = wrongIndices.join(',');
+  const newURL = `advancedquiz.html?seed=${newSeed}&indices=${encodedIndices}`;
+  window.location.href = newURL;
+}
+
+

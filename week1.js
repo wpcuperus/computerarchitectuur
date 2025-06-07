@@ -21,6 +21,12 @@ function generateWeek1Questions() {
   return questions;
 }
 
+function hexVariants(hex) {
+  const clean = hex.replace(/^0x/i, '').toUpperCase();
+  return [clean, `0x${clean}`];
+}
+
+
 // Helperfuncties
 function toBinary8Bits(value) {
   return value.toString(2).padStart(8, '0');
@@ -69,6 +75,7 @@ function generateHexToDecimalQuestion() {
     categories: ['Talstelsels'],
     hint: hint,
     answer: parseInt(hex, 16),
+    correctAnswers: hexVariants(hex),
     explanation: `Het hexadecimale getal ${hex} is gelijk aan ${parseInt(hex, 16)} in decimaal.`
   };
 }
@@ -124,6 +131,7 @@ function generateBinToHexQuestion() {
     categories: ['Talstelsels'],
     hint: `Splits het binaire getal in groepen van 4 bits: ${bin.padStart(Math.ceil(bin.length / 4) * 4, '0')}.<br>Converteer elke groep naar hexadecimaal.`,
     answer: binaryToHex(bin),
+    correctAnswers: [`0x${binaryToHex(bin)}`, binaryToHex(bin)],
     explanation: `Het binaire getal ${bin} is gelijk aan ${parseInt(bin, 2)} in decimaal, wat ${binaryToHex(bin)} is in hexadecimaal.`
   };
 }
@@ -138,6 +146,7 @@ function generateOctToHexQuestion() {
     categories: ['Talstelsels'],
     hint: 'Converteer eerst de octale cijfers ' + oct.split('') + ' naar binair.<br>Converteer vervolgens de binaire groepen naar hexadecimaal.',
     answer: octToHex(oct),
+    correctAnswers: [`0x${octToHex(oct)}`, octToHex(oct)],
     explanation: `Het octale getal ${oct} is gelijk aan ${parseInt(oct, 8)} in decimaal, wat ${octToHex(oct)} is in hexadecimaal.`
   };
 }
@@ -151,6 +160,7 @@ function generateDecToHexQuestion() {
     categories: ['Talstelsels'],
     hint: `Gebruik de deling door 16 methode: ${dec} / 16 = ?<br>Neem de rest en deel het resultaat opnieuw door 16.`,
     answer: decimalToHex(dec),
+    correctAnswers: [`0x${decimalToHex(dec)}`, decimalToHex(dec)],
     explanation: `Het decimale getal ${dec} is gelijk aan ${decimalToHex(dec)} in hexadecimaal.`
   };
 }
@@ -166,6 +176,7 @@ function generateBinaryMultiplicationQuestion() {
     categories: ['Binair rekenen'],
     hint: 'Het is mogelijk om van de vermenigvuldigingssom een optelling te maken met binaire getallen, bijvoorbeeld: 1010 * 1101 = 1010 + 10100 + 000000 + 1010000.',
     answer: decimalToBinary(result),
+    correctAnswers: [decimalToBinary(result), `0b${decimalToBinary(result)}`],
     explanation: `Het binaire getal ${bin1} is ${parseInt(bin1, 2)} en ${bin2} is ${parseInt(bin2, 2)}. Hun product is ${result}, wat binair ${decimalToBinary(result)} is.`
   };
 }
@@ -179,6 +190,7 @@ function generateBinaryAdditionQuestion() {
     categories: ['Binair rekenen'],
     label: `Wat is ${toBinary8Bits(val1)} + ${toBinary8Bits(val2)} (binair)?`,
     answer: decimalToBinary(val1 + val2),
+    correctAnswers: [decimalToBinary(val1 + val2), `0b${decimalToBinary(val1 + val2)}`],
     explanation: `Som van ${val1} en ${val2} is ${val1 + val2}, oftewel ${decimalToBinary(val1 + val2)} in binair.`
   };
 }
@@ -194,6 +206,7 @@ function generateBinarySubtractionQuestion() {
     categories: ['Binair rekenen'],
     label: `Wat is ${toBinary8Bits(val1)} - ${toBinary8Bits(val2)} (binair)?`,
     answer: decimalToBinary(diff),
+    correctAnswers: [decimalToBinary(diff), `0b${decimalToBinary(diff)}`],
     explanation: `Verschil is ${diff}, oftewel ${decimalToBinary(diff)} in binair.`
   };
 }
@@ -209,6 +222,7 @@ function generateHexAdditionQuestion() {
     categories: ['Talstelsels'],
     label: `Wat is ${a} + ${b} (hexadecimaal)?`,
     answer: decimalToHex(sum),
+    correctAnswers: hexVariants(decimalToHex(sum)),
     explanation: `${a} + ${b} = ${sum} decimaal = ${decimalToHex(sum)} hex.`
   };
 }
@@ -230,6 +244,7 @@ function generateHexSubtractionQuestion() {
     categories: ['Talstelsels'],
     label: `Wat is ${a} - ${b} (hexadecimaal)?`,
     answer: decimalToHex(diff),
+    correctAnswers: hexVariants(decimalToHex(diff)),
     explanation: `${a} - ${b} = ${diff} decimaal = ${decimalToHex(diff)} hex.`
   };
 }
@@ -326,6 +341,7 @@ function generateBaseAdditionToHexQuestion() {
     label: `Tel de getallen ${val1Base} en ${val2Base} (beide getallen behoren tot het ${base}-tallig stelsel) op en geef het resultaat als hexadecimaal getal:`,
     hint: hint,
     answer: `0x${sumHex}`,
+    correctAnswers: [`0x${sumHex}`, `${sumHex}`],
     explanation: `${val1Base} (${val1Dec}) + ${val2Base} (${val2Dec}) = ${sumDec} = 0x${sumHex}`
   };
 }

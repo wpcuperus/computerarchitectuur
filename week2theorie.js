@@ -1,3 +1,12 @@
+function randomHex32Aligned() {
+  // Generate een positief 32-bit getal, laatste hex digit = 0
+  // rng() geeft een float tussen 0 (incl) en 1 (excl)
+  const num = Math.floor(rng() * 0x100000000); // max 2^32 - 1
+  const alignedNum = num & 0xFFFFFFF0; // Zorg dat laatste nibble 0 is
+  return alignedNum.toString(16).padStart(8, '0');
+}
+
+
 function generateWeek2TheoryQuestions() {
   const questions = [];
 
@@ -43,6 +52,7 @@ function generateWeek2TheoryQuestions() {
 
     const questionText = `Gegeven onderstaande assembly code:<br>
 
+    <code>
 .data <br>
 arr2: .word ${dataWord} <br>
 <br>
@@ -50,11 +60,13 @@ arr2: .word ${dataWord} <br>
 la x12, arr2 <br>
 lb x15, 2(x12) <br>
 lbu x16, 3(x12) <br><br>
+</code>
 
 Na het uitvoeren van dit programma hebben de registers de volgende waarden: <br>
-x12 = ${baseAddr} <br>
-x15 = 0x${(x15_val < 0 ? (x15_val + 0x100).toString(16).toUpperCase() : x15_val.toString(16).padStart(2,'0').toUpperCase())} <br>
-x16 = 0x${x16_val.toString(16).padStart(2,'0').toUpperCase()} <br>
+x12 = <code>${baseAddr}</code> <br>
+x15 = <code>0x${(x15_val < 0 ? (x15_val + 0x100).toString(16).toUpperCase() : x15_val.toString(16).padStart(2,'0').toUpperCase())}</code> <br>
+x16 = <code>0x${x16_val.toString(16).padStart(2,'0').toUpperCase()}</code> <br>
+</code>
 
 Welke notatiewijze wordt gebruikt door de processor?`;
 
@@ -71,8 +83,11 @@ Welke notatiewijze wordt gebruikt door de processor?`;
 // Vraag 2: Geheugendump + waarde lezen
 {
   // Willekeurig startadres (32bit aligned)
-  const startAddrInt = Math.floor(rng() * 0xFFFFF000);
-  const startAddrStr = startAddrInt.toString(16).padStart(8, '0');
+  const startAddrInt = (Math.floor(rng() * 0x100000000) & 0xFFFFFFF0) >>> 0;
+const startAddrStr = startAddrInt.toString(16).padStart(8, '0');
+
+
+
 
   // Maak 16 bytes willekeurige data
   const memBytes = [];
@@ -84,7 +99,7 @@ Welke notatiewijze wordt gebruikt door de processor?`;
   const hexBytes = memBytes.map(b => b.toString(16).padStart(2, '0'));
   const asciiBytes = memBytes.map(b => (b >= 0x20 && b <= 0x7E) ? String.fromCharCode(b) : '.');
 
-  const line = `${startAddrStr}: ${hexBytes.join(' ')}  * ${asciiBytes.join('')} *`;
+  const line = `${startAddrStr}: <code>${hexBytes.join(' ')}  * ${asciiBytes.join('')} *</code>`;
 
   // Kies offset binnen de 16 bytes (max offset = 16 - max datatype bytes)
   const dataSizes = [1, 2, 4];
@@ -117,7 +132,8 @@ Welke notatiewijze wordt gebruikt door de processor?`;
     label: questionText,
     answer: hexValue.toLowerCase(),  // Antwoord in kleine letters
     categories: ['Endianness'],
-    correctAnswers: [hexValue.toLowerCase()],
+    // Antwoord met en zonder 0x prefix, en met en zonder spaties tussen elke twee hex-digits
+    correctAnswers: [hexValue.toLowerCase(), hexValue.toLowerCase().replace('0x', ''), hexValue.toLowerCase().replace('0x', '').replace(/(.{2})/g, '$1 ').trim()],
     hint: `Bepaal eerst de offset binnen de regel. Kijk vervolgens welke bytes je nodig hebt op basis van het aantal bits. Vergeet niet om de bytes om te keren bij little endian voordat je ze samenvoegt tot een hexadecimale waarde.`
   });
 }

@@ -199,7 +199,7 @@ questions.push({
 const hexStr = hex.toUpperCase();
 questions.push({
   title: 'IEEE 754 floating point naar hexadecimaal',
-  label: `Wat is de IEEE 754 (32-bit single precision) hexadecimale representatie van ${floatVal}? (Je mag het antwoord met of zonder "0x" prefix geven)`,
+  label: `Wat is de IEEE 754 (32-bit single precision) hexadecimale representatie van ${floatVal}?`,
   categories: ['Floating Point'],
   answer: `0x${hexStr}`,
   correctAnswers: [`0x${hexStr}`, hexStr]

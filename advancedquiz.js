@@ -85,6 +85,22 @@ function checkAnswers() {
   });
 
   document.getElementById('score').textContent = `Je score: ${score} van de ${selectedQuestions.length}`;
+  
+  // Voeg retry-knop toe
+const retryContainer = document.getElementById('retry-button-container') || document.createElement('div');
+retryContainer.id = 'retry-button-container';
+retryContainer.innerHTML = ''; // reset eerdere inhoud
+
+if (score < selectedQuestions.length) {
+  const retryButton = document.createElement('button');
+  retryButton.textContent = 'Oefen fout beantwoorde vragen opnieuw';
+  retryButton.style.marginTop = '1em';
+  retryButton.onclick = regenerateFromWrongAnswers;
+  retryContainer.appendChild(retryButton);
+}
+
+document.getElementById('score').appendChild(retryContainer);
+
 }
 
 window.onload = generateQuiz;
@@ -155,3 +171,34 @@ function checkSingleAnswer(index) {
     feedback.innerHTML = `❌ Fout. Het juiste antwoord is: ${correctAnswer}<br>${q.explanation || ''}`;
   }
 }
+
+function regenerateFromWrongAnswers() {
+  const wrongIndices = [];
+
+  selectedQuestions.forEach((q, index) => {
+    const input = document.getElementById(`q${index}`).value.trim();
+    let correct = false;
+
+    if (q.binaryAnswer !== undefined) {
+      correct = input === q.binaryAnswer;
+    } else if (Array.isArray(q.correctAnswers)) {
+      correct = q.correctAnswers.some(ans => ans.toLowerCase() === input.toLowerCase());
+    } else {
+      correct = input.toLowerCase() === q.answer.toString().toLowerCase();
+    }
+
+    if (!correct) wrongIndices.push(index);
+  });
+
+  if (wrongIndices.length === 0) {
+    alert('Alle antwoorden zijn correct beantwoord!');
+    return;
+  }
+
+  const newSeed = Math.floor(Math.random() * 1_000_000);
+  const newIndices = wrongIndices.join(',');
+  const url = `advancedquiz.html?seed=${newSeed}&indices=${newIndices}`;
+  window.location.href = url;
+}
+
+
