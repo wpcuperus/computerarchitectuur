@@ -100,10 +100,6 @@ questions.push({
     { mnemonic: "or",   opcode: "0110011", funct3: "110", funct7: "0000000", format: "R" },
     { mnemonic: "and",  opcode: "0110011", funct3: "111", funct7: "0000000", format: "R" },
     { mnemonic: "sll",  opcode: "0110011", funct3: "001", funct7: "0000000", format: "R" },
-    { mnemonic: "srl",  opcode: "0110011", funct3: "101", funct7: "0000000", format: "R" },
-    { mnemonic: "sra",  opcode: "0110011", funct3: "101", funct7: "0100000", format: "R" },
-    { mnemonic: "slt",  opcode: "0110011", funct3: "010", funct7: "0000000", format: "R" },
-    { mnemonic: "sltu", opcode: "0110011", funct3: "011", funct7: "0000000", format: "R" },
   ];
 
   // I-type instructies
@@ -113,10 +109,6 @@ questions.push({
     { mnemonic: "ori",  opcode: "0010011", funct3: "110", format: "I" },
     { mnemonic: "andi", opcode: "0010011", funct3: "111", format: "I" },
     { mnemonic: "slli", opcode: "0010011", funct3: "001", format: "I", funct7: "0000000" },
-    { mnemonic: "srli", opcode: "0010011", funct3: "101", format: "I", funct7: "0000000" },
-    { mnemonic: "srai", opcode: "0010011", funct3: "101", format: "I", funct7: "0100000" },
-    { mnemonic: "slti", opcode: "0010011", funct3: "010", format: "I" },
-    { mnemonic: "sltiu",opcode: "0010011", funct3: "011", format: "I" },
   ];
 
   // Kies random type instructie
@@ -138,9 +130,17 @@ function randomHex32() {
     instr = rTypeInstrs[Math.floor(rng() * rTypeInstrs.length)];
     rd = randReg();
     rs1 = randReg();
-    rs2 = randReg();
-    while (rs1 === rd) rs1 = randReg();
-    while (rs2 === rd || rs2 === rs1) rs2 = randReg();
+do { rs2 = randReg(); } while (rs2 === rd || rs2 === rs1);
+
+// Bij sub: rs1 moet groter zijn dan rs2
+if (instr.mnemonic === "sub") {
+  if (rs1 < rs2) {
+    const tmp = rs1;
+    rs1 = rs2;
+    rs2 = tmp;
+  }
+}
+
 
     binaryInstr =
       instr.funct7 +
@@ -158,7 +158,7 @@ function randomHex32() {
     while (rs1 === rd) rs1 = randReg();
 
     if (["slli","srli","srai"].includes(instr.mnemonic)) {
-      imm = Math.floor(rng() * 32);
+      imm = Math.floor(rng() * 33);
       const imm5 = immBin(imm, 5);
       binaryInstr =
         instr.funct7 +
@@ -169,7 +169,7 @@ function randomHex32() {
         instr.opcode;
       instrHex = parseInt(binaryInstr, 2).toString(16).padStart(8, '0');
     } else {
-      imm = Math.floor(rng() * 0x1000); // max 0x0FFF = 4095
+      imm = Math.floor(rng() * 33); // max 32
       const imm12 = immBin(imm, 12);
       binaryInstr =
         imm12 +
