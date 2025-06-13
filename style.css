@@ -1,0 +1,50 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  padding: 20px;
+}
+
+main {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+}
+
+.question {
+  margin-bottom: 15px;
+}
+
+input {
+  padding: 5px;
+  margin-top: 5px;
+  width: 100px;
+}
+
+.feedback {
+  font-weight: bold;
+  min-height: 10em; /* of meer, afhankelijk van je score-output */
+}
+
+#score {
+  min-height: 4em; /* of meer, afhankelijk van je score-output */
+}
+
+.category-filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem;
+  margin-bottom: 1rem;
+}
+
+.category-checkbox {
+  flex: 1 1 calc(50.0% - 1rem);
+  min-width: 150px;
+}
