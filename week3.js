@@ -1,3 +1,161 @@
+function generateWeek3LogicEquivalenceQuestion() {
+  // Symbolen voor operatoren
+  const symbols = {
+    AND: '⋅',
+    OR: '+',
+    NOT: '¬',
+    XOR: '⊕',
+    NAND: '↑',
+    NOR: '↓',
+  };
+
+  // Logische functies met JavaScript implementaties
+  const logicFunctions = {
+    AND: (a, b) => a & b,
+    OR: (a, b) => a | b,
+    NAND: (a, b) => 1 - (a & b),
+    NOR: (a, b) => 1 - (a | b),
+    XOR: (a, b) => a ^ b,
+    NOT: a => 1 - a,
+  };
+
+  // Voorbeeld van complexe expressies met 2 variabelen (A, B)
+  // expressies zijn functies (a,b) => 0/1 en string representaties
+  const expressions = [
+    {
+      exprStr: `(A ${symbols.AND} ${symbols.NOT}B) ${symbols.XOR} A`,
+      func: (a, b) => logicFunctions.XOR(logicFunctions.AND(a, logicFunctions.NOT(b)), a),
+      // correcte equivalente expressie
+      equivalentStr: `A ${symbols.AND} B`,
+      equivalentFunc: (a, b) => logicFunctions.AND(a, b),
+    },
+    {
+      exprStr: `${symbols.NOT}(A ${symbols.OR} B)`,
+      func: (a, b) => logicFunctions.NOT(logicFunctions.OR(a, b)),
+      equivalentStr: `${symbols.NOT}A ${symbols.AND} ${symbols.NOT}B`,
+      equivalentFunc: (a, b) => logicFunctions.AND(logicFunctions.NOT(a), logicFunctions.NOT(b)),
+    },
+    {
+      exprStr: `${symbols.NOT}(A ${symbols.AND} B)`,
+      func: (a, b) => logicFunctions.NOT(logicFunctions.AND(a, b)),
+      equivalentStr: `${symbols.NOT}A ${symbols.OR} ${symbols.NOT}B`,
+      equivalentFunc: (a, b) => logicFunctions.OR(logicFunctions.NOT(a), logicFunctions.NOT(b)),
+    },
+    {
+      exprStr: `(A ${symbols.OR} B) ${symbols.XOR} (A ${symbols.AND} B)`,
+      func: (a, b) => logicFunctions.XOR(logicFunctions.OR(a, b), logicFunctions.AND(a, b)),
+      equivalentStr: `A ${symbols.XOR} B`,
+      equivalentFunc: (a, b) => logicFunctions.XOR(a, b),
+    },
+  ];
+
+  // Kies een willekeurige expressie uit de lijst
+  const chosenIndex = Math.floor(Math.random() * expressions.length);
+  const chosen = expressions[chosenIndex];
+
+  // Genereer de waarheidstabel voor de originele en de correcte expressie
+  const tableRows = [];
+  for (let a = 0; a <= 1; a++) {
+    for (let b = 0; b <= 1; b++) {
+      const valOrig = chosen.func(a, b);
+      const valEquiv = chosen.equivalentFunc(a, b);
+      tableRows.push({a, b, valOrig, valEquiv});
+    }
+  }
+
+  // Genereer 7 foute alternatieven (random variaties op expressies met A,B)
+  // Simpele alternatieven, geen perfecte check maar voldoende voor voorbeeld
+  const alternatives = [
+    `A ${symbols.AND} ${symbols.NOT}B`,
+    `A ${symbols.OR} B`,
+    `${symbols.NOT}A ${symbols.OR} B`,
+    `${symbols.NOT}B ${symbols.AND} A`,
+    `A ${symbols.XOR} B`,
+    `${symbols.NOT}A ${symbols.AND} B`,
+    `A ${symbols.NAND} B`,
+    `A ${symbols.NOR} B`
+  ];
+
+  // Zorg dat het correcte antwoord tussen de alternatieven zit
+  // We verwijderen duplicates en de correcte expressie uit de alternatieven
+  let filteredAlternatives = alternatives.filter(
+    alt => alt !== chosen.equivalentStr
+  );
+
+  // Kies 7 willekeurige foute antwoorden
+  filteredAlternatives = filteredAlternatives.sort(() => 0.5 - Math.random()).slice(0, 7);
+
+  // Voeg het juiste antwoord toe en shuffle
+  const allAnswers = [...filteredAlternatives, chosen.equivalentStr].sort(() => 0.5 - Math.random());
+
+  // Map naar letters A-H
+  const letterOptions = ['A','B','C','D','E','F','G','H'];
+  const answerOptions = allAnswers.map((expr, idx) => ({
+    letter: letterOptions[idx],
+    expr
+  }));
+
+  // Vind letter van correct antwoord
+  const correctLetter = answerOptions.find(opt => opt.expr === chosen.equivalentStr).letter;
+
+  // Bouw feedback waarheidstabel in stringvorm
+  let feedbackTable = `A B   Origineel                  Equivalent\n`;
+  tableRows.forEach(row => {
+    const a = row.a;
+    const b = row.b;
+    const valOrig = row.valOrig;
+    const valEquiv = row.valEquiv;
+    feedbackTable += `${a} ${b}     ${valOrig}                        ${valEquiv}\n`;
+  });
+
+  // Bouw feedback waarheidstabel als HTML-tabel met expressies tussen haakjes in de kop
+const feedbackTableHtml = `
+<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; text-align: center;">
+  <thead>
+    <tr>
+      <th>A</th>
+      <th>B</th>
+      <th>Origineel<br><small>(${chosen.exprStr})</small></th>
+      <th>Equivalent<br><small>(${chosen.equivalentStr})</small></th>
+    </tr>
+  </thead>
+  <tbody>
+    ${tableRows.map(row => `
+      <tr>
+        <td>${row.a}</td>
+        <td>${row.b}</td>
+        <td>${row.valOrig}</td>
+        <td>${row.valEquiv}</td>
+      </tr>
+    `).join('')}
+  </tbody>
+</table>
+`;
+
+
+  // Bouw HTML van vraag met expressie en antwoorden
+  const html = `
+<p>Gegeven de volgende logische expressie:</p>
+<pre>${chosen.exprStr}</pre>
+<p>Aan welke andere logische expressie is deze gelijkwaardig?</p>
+<ul>
+  ${answerOptions.map(opt => `<li><strong>${opt.letter}.</strong> ${opt.expr}</li>`).join('\n')}
+</ul>
+`;
+
+  return {
+    id: 'logic-equivalence-random',
+    title: 'Logische expressie gelijkwaardigheid',
+    label: html,
+    categories: ['Waarheidstabellen', 'Logica'],
+    hint: 'Vergelijk de waarden van de waarheidstabel en kies de gelijkwaardige expressie.',
+    explanation: feedbackTableHtml,
+    answer: correctLetter,
+    correctAnswers: [correctLetter],
+  };
+}
+
+
 function generateWeek3Questions() {
   const questions = [];
 
@@ -617,6 +775,7 @@ Bij elke rising edge wordt Q gelijk aan X. Z is 1 als Q kleiner dan of gelijk aa
   });
 }
 
+  questions.push(generateWeek3LogicEquivalenceQuestion());
 
   return questions;
 }
