@@ -488,6 +488,206 @@ Geef het antwoord als volgt: 0x45, 0xBB, 0x12</p>
   });
 }
 
+{
+  // Willekeurige beginwaarden genereren
+  const x13_init = 1;  // Dit kun je ook willekeurig maken als je wilt
+  const x14_init = Math.floor(rng() * 10 - 5);  // Bijv. -5 t/m 4
+  const x15_init = Math.floor(rng() * 10 - 10); // Bijv. -10 t/m -1
+
+  // Genereer assembly code met deze waarden
+  const html = `
+<p>Bekijk het onderstaande RISC-V programma:</p>
+<pre><code>.text
+init:
+  addi x13, zero, ${x13_init}
+  addi x14, zero, ${x14_init}
+  addi x15, x0, ${x15_init}
+loop:
+  sub x15, zero, x15
+  add x14, x13, x14
+  bne x13, x14, loop
+  j end
+blok:
+  addi x15, x15, 3
+end:
+  addi x14, x14, -2</code></pre>
+
+<p>Welke waarden staan er in de registers na het uitvoeren van dit programma?</p>
+<p>Geef het antwoord in het formaat: <code>x14 = ? en x15 = ?</code></p>
+`;
+
+  // Simuleer het programma om het correcte antwoord te bepalen
+  let x13 = x13_init;
+  let x14 = x14_init;
+  let x15 = x15_init;
+
+  while (x13 !== x14) {
+    x15 = -x15;
+    x14 = x14 + x13;
+  }
+
+  // blok wordt overgeslagen
+  x14 = x14 - 2;
+
+  const correctAnswer = `x14 = ${x14} en x15 = ${x15}`;
+
+  const uitleg = `
+✔️ Het programma voert de lus uit totdat x13 gelijk is aan x14.
+Daarna stopt de lus en springt hij naar <code>end</code>. Daar wordt x14 nog met 2 verminderd:
+<code>x14 = ${x14 + 2} - 2 = ${x14}</code>.<br>
+x15 blijft ${x15} omdat <code>blok</code> wordt overgeslagen.
+`;
+
+  questions.push({
+    title: 'Waarden in registers na RISC-V programma',
+    label: html,
+    categories: ['RISC-V'],
+    hint: 'Doorloop het programma stap voor stap. Kijk goed wanneer de lus stopt en of de blok-instructies worden uitgevoerd.',
+    answer: correctAnswer,
+    correctAnswers: [correctAnswer],
+    explanation: uitleg.trim()
+  });
+}
+
+{
+  // Genereer willekeurige getallen
+  const getallen = Array.from({length: 7}, () => 5 + Math.floor(rng() * 11)); // 5 t/m 15
+  const t2Index = 0; // eerste element
+  const t3Index = 1; // tweede element
+  const t5Value = 2 + Math.floor(rng() * 4); // 2 t/m 5
+
+  const t2Value = getallen[t2Index];
+  const t3Value = getallen[t3Index];
+  const s1Value = (t2Value * t5Value) + t3Value;
+
+  const html = `
+<p>Welke decimale waarde staat in register <code>s1</code> na uitvoeren van onderstaande code?</p>
+<pre><code>.data
+getallen: .word ${getallen.join(', ')}
+
+.text
+la t1, getallen
+lw t2, (t1)
+lw t3, 4(t1)
+li t5, ${t5Value}
+mul t2, t2, t5
+add s1, t2, t3</code></pre>
+
+<p>Voer als antwoord alleen het decimale getal in.</p>
+`;
+
+  const uitleg = `✔️ t2 = ${t2Value}, t3 = ${t3Value}, t5 = ${t5Value}.<br>
+t2 * t5 = ${t2Value * t5Value}.<br>
++ t3 = ${s1Value}.`;
+
+  questions.push({
+    id: 'riscv-data-calc',
+    title: 'Registerwaarde na uitvoering',
+    label: html,
+    categories: ['RISC-V'],
+    hint: `Let goed op welke waarden in het geheugen staan en hoe deze worden geladen.`,
+    answer: s1Value.toString(),
+    correctAnswers: [s1Value.toString()],
+    explanation: uitleg
+  });
+}
+
+{
+  // Willekeurige waarden voor x10 en x11
+  const x10Init = 10 + Math.floor(rng() * 21);  // 10 t/m 30
+  const x11Init = 20 + Math.floor(rng() * 31);  // 20 t/m 50
+  const addiVal = 1 + Math.floor(rng() * 5);    // 1 t/m 5
+
+  // Berekeningen stap voor stap
+  const x10AfterAddi = x11Init + addiVal;
+  const x12Val = x10AfterAddi + x11Init;
+
+  // Vraagtekst
+  const html = `
+<p>Welke (decimale) waarde staat in register <code>x12</code> na uitvoeren van onderstaande code?</p>
+<pre><code>li x10, ${x10Init}
+li x11, ${x11Init}
+addi x10, x11, ${addiVal}
+add x12, x10, x11</code></pre>
+<p>Voer als antwoord alleen het decimale getal in.</p>
+`;
+
+  const uitleg = `
+✔️ Uitleg van de stappen:
+<ul>
+  <li><code>li x10, ${x10Init}</code></li>
+  <li><code>li x11, ${x11Init}</code></li>
+  <li><code>addi x10, x11, ${addiVal}</code> → x10 = ${x11Init} + ${addiVal} = ${x10AfterAddi}</li>
+  <li><code>add x12, x10, x11</code> → x12 = ${x10AfterAddi} + ${x11Init} = ${x12Val}</li>
+</ul>
+Het juiste antwoord is dus <strong>${x12Val}</strong>.
+`;
+
+  questions.push({
+    id: 'riscv-x12-calc',
+    title: 'Bereken registerwaarde x12',
+    label: html,
+    categories: ['RISC-V'],
+    hint: `Let goed op hoe x10 overschreven wordt door de addi-instructie.`,
+    answer: x12Val.toString(),
+    correctAnswers: [x12Val.toString()],
+    explanation: uitleg.trim()
+  });
+}
+
+{
+  // Willekeurige 32-bit waarde
+  const word = Math.floor(rng() * 0xFFFFFFFF);
+  
+  // De afzonderlijke bytes in little-endian volgorde
+  const b0 = word & 0xFF;               // adres 0x10000
+  const b1 = (word >> 8) & 0xFF;        // adres 0x10001
+  const b2 = (word >> 16) & 0xFF;       // adres 0x10002
+  const b3 = (word >> 24) & 0xFF;       // adres 0x10003
+
+  // De 16-bit waarde die geladen wordt
+  const val16 = (b1 << 8) | b0;
+
+  // 32-bit registerwaarde
+  const val32 = val16 >>> 0;  // unsigned 32-bit
+  const val32hex = `0x${val32.toString(16).toUpperCase().padStart(8, '0')}`;
+
+  // Vraagtekst
+  const html = `
+<p>Gegeven:</p>
+<ul>
+<li>De processor hanteert <strong>little-endian</strong>;</li>
+<li>Op geheugenadres <code>0x10000</code> is de 32-bit integer <code>0x${word.toString(16).toUpperCase().padStart(8, '0')}</code> opgeslagen;</li>
+<li>De processor leest een 16-bit integer van geheugenadres <code>0x10000</code>, en slaat deze op in (32-bit) register <code>x10</code>.</li>
+</ul>
+<p>Welke waarde heeft register <code>x10</code>?</p>
+<p><em>Voer je antwoord in als een 32-bit hexadecimale waarde, bijvoorbeeld <code>0x00003C4D</code></em></p>
+`;
+
+  // Uitleg
+  const uitleg = `
+De 32-bit integer <code>0x${word.toString(16).toUpperCase().padStart(8, '0')}</code> bestaat uit de bytes:
+<ul>
+<li><code>0x${b3.toString(16).toUpperCase().padStart(2, '0')}</code> (hoogste byte, adres 0x10003)</li>
+<li><code>0x${b2.toString(16).toUpperCase().padStart(2, '0')}</code> (adres 0x10002)</li>
+<li><code>0x${b1.toString(16).toUpperCase().padStart(2, '0')}</code> (adres 0x10001)</li>
+<li><code>0x${b0.toString(16).toUpperCase().padStart(2, '0')}</code> (laagste byte, adres 0x10000)</li>
+</ul>
+Bij little-endian staat <code>0x${b0.toString(16).toUpperCase().padStart(2, '0')}</code> op adres 0x10000 en <code>0x${b1.toString(16).toUpperCase().padStart(2, '0')}</code> op adres 0x10001.<br>
+De 16-bit waarde is <code>0x${b1.toString(16).toUpperCase().padStart(2, '0')}${b0.toString(16).toUpperCase().padStart(2, '0')}</code>, dus <code>${val32hex}</code> in een 32-bit register.
+`;
+
+  questions.push({
+    id: 'riscv-little-endian-load16',
+    title: 'Little-endian 16-bit load',
+    label: html,
+    categories: ['RISC-V'],
+    hint: `Let goed op de bytevolgorde bij little-endian.`,
+    answer: val32hex,
+    correctAnswers: [val32hex],
+    explanation: uitleg.trim()
+  });
+}
 
   return questions;
 }

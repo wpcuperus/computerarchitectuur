@@ -249,5 +249,59 @@ function generateWeek5Questions() {
     });
   }
 
+    // VRAAG 7 — Welke registers moeten worden bewaard in fact?
+  {
+    const html = `
+<p>Gegeven is onderstaand programma.</p>
+<pre><code>.data
+ arr: .word 1 3 4 5 6 7 8 9
+
+.text
+  la s3, arr
+  addi s4, zero, 4
+  addi s5, zero, 7
+  lw x10, 12(s3)
+  jal fact
+  sw x10, 12(s3)
+  addi s4, s4, 1
+  j end
+fact:
+  # write to stack
+  lw s4, 0(s3)
+  sub x10, s4, s5
+  # read from stack
+  jalr x0, 0(x1)
+end:
+  add s5, s5, s5
+</code></pre>
+<p>Welke register(s) moeten in de procedure <code>fact</code> op de stack worden bewaard aan het begin van de procedure en aan het eind weer worden uitgelezen van de stack?</p>
+<p>Kies het juiste antwoord:</p>
+<strong>A.</strong> Alle "saved" registers s0, s1, ..., s10, s11<br>
+<strong>B.</strong> Alleen s3, s4, s5 en x10<br>
+<strong>C.</strong> Alleen s4<br>
+<strong>D.</strong> Geen enkel register
+`;
+
+    const correctLabel = 'C';
+
+    const explanation = `
+De procedure <code>fact</code> gebruikt het register <code>s4</code> op een manier die de oorspronkelijke waarde zou overschrijven (door <code>lw s4, 0(s3)</code>). 
+Omdat <code>s4</code> een saved register is (volgens de calling convention) en het wordt overschreven, moet het bewaard en hersteld worden. 
+De andere registers die gebruikt worden (<code>x10</code>, <code>s3</code>, <code>s5</code>) worden niet overschreven of zijn geen saved registers waarvoor de callee verantwoordelijk is.
+`;
+
+    questions.push({
+      id: 'fact-saved-registers',
+      title: 'Registers bewaren in fact',
+      label: html,
+      categories: ['Procedure Calls (Leaf and non-leaf)', 'RISC-V'],
+      hint: 'Welke saved registers worden in de procedure aangepast?',
+      answer: correctLabel,
+      correctAnswers: [correctLabel],
+      explanation: explanation.trim(),
+    });
+  }
+
+
   return questions;
 }

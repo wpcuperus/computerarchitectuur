@@ -572,5 +572,51 @@ Bij elke rising edge wordt Q gelijk aan X. Z is 1 als Q kleiner dan of gelijk aa
   });
 }
 
+{
+  // Willekeurige A en B
+  const A = Math.random() < 0.5 ? 0 : 1;
+  const B = Math.random() < 0.5 ? 0 : 1;
+
+  // Vaste tabel: A B P Q
+  // A en B invoer → P = A OR B → Q = NOT P
+  const table = [
+    { A: 0, B: 0, P: 0, Q: 1 },
+    { A: 0, B: 1, P: 1, Q: 1 },
+    { A: 1, B: 0, P: 1, Q: 0 },
+    { A: 1, B: 1, P: 1, Q: 0 }
+  ];
+
+  // Bereken correcte P en Q
+  const row = table.find(r => r.A === A && r.B === B);
+  const correctAnswer = `P=${row.P}, Q=${row.Q}`;
+
+  // HTML tekst van de vraag
+  const html = `
+<p>Wat zijn de waardes van <strong>P</strong> en <strong>Q</strong> in onderstaande logische schakeling, als geldt A=${A} en B=${B}?</p>
+<img src="assets/schakeling.png" alt="Schakeling" style="width: 300px;">
+<p>Geef antwoord in het volgende format: P=0, Q=0</p>
+`;
+
+  // Voeg de vraag toe
+  questions.push({
+    id: 'logic-fixed-table',
+    title: 'Logische schakeling met vaste tabel',
+    label: html,
+    categories: [],
+    hint: 'Kijk goed naar de poorten in de schakeling. A en B gaan samen in een XOR-poort, en de output P gaat samen met A in een NAND-poort. Q is de output.',
+    answer: correctAnswer,
+    correctAnswers: [correctAnswer],
+    // Explanation als tabel laten zien in plaats van als tekst
+    explanation: `
+    Hieronder de waarheidstabel voor de schakeling:<br>
+    <table border="1" cellpadding="5" style="font-family: monospace;">
+    <tr><th>A</th><th>B</th><th>P</th><th>Q</th></tr>
+    ${table.map(r => `<tr><td>${r.A}</td><td>${r.B}</td><td>${r.P}</td><td>${r.Q}</td></tr>`).join('')}
+    </table>
+`
+  });
+}
+
+
   return questions;
 }
