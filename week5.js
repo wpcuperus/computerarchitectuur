@@ -208,9 +208,9 @@ function generateWeek5Questions() {
 
     questions.push({
       id: 'leaf-vs-nonleaf',
-      title: 'Leaf vs Non-leaf',
+      title: 'Leaf vs Non-leaf procedures',
       label: `<p>Wat is het belangrijkste verschil tussen een leaf procedure en een non-leaf procedure?</p>${labelHtml}`,
-      categories: ['Procedures (Leaf and non-leaf)'],
+      categories: ['Procedure Calls (Leaf and non-leaf)'],
       answer: correctLabel,
       correctAnswers: [correctLabel],
       explanation: `Leaf procedures roepen geen andere functies aan; non-leaf procedures doen dat wel.`,

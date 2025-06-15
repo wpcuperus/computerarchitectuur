@@ -1,3 +1,10 @@
+// Week 6: Processor en optimalisatie
+// Categorieën:
+// - Datapath
+// - System Bus inc. address lines, data lines and control lines
+// - Pipelining
+// - Caching
+
 function generateWeek6Questions() {
   const questions = [];
 

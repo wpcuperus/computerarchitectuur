@@ -1,3 +1,10 @@
+// Week 6: Processor en optimalisatie
+// Categorieën:
+// - Datapath
+// - System Bus inc. address lines, data lines and control lines
+// - Pipelining
+// - Caching
+
 function generateWeek6TheoryQuestions() {
   const questions = [];
 
@@ -212,7 +219,7 @@ function generateWeek6TheoryQuestions() {
       title: 'Control bus functie',
       label: html,
       answer: correctLabel,
-      categories: ['System bus'],
+      categories: ['System Bus'],
       correctAnswers: [correctLabel],
       explanation: `De control bus is verantwoordelijk voor het regelen van de operaties en het dirigeren van de dataflow tussen de CPU en andere componenten.`
     });

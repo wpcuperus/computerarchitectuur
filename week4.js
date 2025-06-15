@@ -681,7 +681,7 @@ De 16-bit waarde is <code>0x${b1.toString(16).toUpperCase().padStart(2, '0')}${b
     id: 'riscv-little-endian-load16',
     title: 'Little-endian 16-bit load',
     label: html,
-    categories: ['RISC-V'],
+    categories: ['RISC-V', 'Endianness'],
     hint: `Let goed op de bytevolgorde bij little-endian.`,
     answer: val32hex,
     correctAnswers: [val32hex],

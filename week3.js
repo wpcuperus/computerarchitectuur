@@ -721,7 +721,7 @@ Bij elke rising edge wordt Q gelijk aan X. Z is 1 als Q kleiner dan of gelijk aa
 
   questions.push({
     id: `flip-flop-output-timing`,
-    title: 'Flip-flop met kloksignaal | Output per tijdstip',
+    title: 'Flip-flop met kloksignaal | Output per tijdstip A, B, C, D',
     label: html,
     categories: ['Flip-flops'],
     hint: `De flip-flop verandert van toestand bij een rising edge van de klok (CLK).`,
@@ -760,7 +760,7 @@ Bij elke rising edge wordt Q gelijk aan X. Z is 1 als Q kleiner dan of gelijk aa
     id: 'logic-fixed-table',
     title: 'Logische schakeling met vaste tabel',
     label: html,
-    categories: [],
+    categories: ['Gates', 'Waarheidstabellen'],
     hint: 'Kijk goed naar de poorten in de schakeling. A en B gaan samen in een XOR-poort, en de output P gaat samen met A in een NAND-poort. Q is de output.',
     answer: correctAnswer,
     correctAnswers: [correctAnswer],
