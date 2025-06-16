@@ -279,7 +279,7 @@ dus ${instructionCount} + 4 = ${totalCycles} klokcycli.`;
     questions.push({
       id: `tag-bits-direct-mapped-cache`,
       title: 'Tag-bits bij direct mapped cache',
-      label: `Gegeven een systeem met een woordbreedte van 1 byte, een (maximaal) geheugen van ${memoryMB} MB en een cache van ${cacheKB} KB. <br> Bij direct mapped cache, hoeveel bits is het tag-veld van dit systeem?`,
+      label: `Gegeven een systeem met een woordbreedte van 1 byte, een (maximaal) geheugen van ${memoryMB} MiB en een cache van ${cacheKB} KiB. <br> Bij direct mapped cache, hoeveel bits is het tag-veld van dit systeem?`,
       hint: `Onthoud dat 1 MiB gelijkstaat aan 2^20 bytes <a href="https://nl.wikipedia.org/wiki/Veelvouden_van_bytes">meer info</a>. Bereken met deze informatie het aantal bits voor adres. De cache is gelijk aan een macht van 2 (bijv. 512 regels = 2^9 regels). Adres - index - offset = tag bits.`,
       answer: `${tagBits}`,
       categories: ['Caching'],

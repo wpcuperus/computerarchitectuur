@@ -86,7 +86,10 @@ function checkAnswers() {
     if (q.binaryAnswer !== undefined) {
       correct = input === q.binaryAnswer;
     } else if (Array.isArray(q.correctAnswers)) {
-      correct = q.correctAnswers.some(ans => ans.toString().toLowerCase() === input.toLowerCase());
+      correct = q.correctAnswers.some(ans => 
+  String(ans).toLowerCase() === input.toLowerCase()
+);
+
     } else {
       correct = input.toLowerCase() === q.answer.toString().toLowerCase();
     }
@@ -211,7 +214,10 @@ function checkSingleAnswer(index) {
   if (q.binaryAnswer !== undefined) {
     correct = input === q.binaryAnswer;
   } else if (Array.isArray(q.correctAnswers)) {
-    correct = q.correctAnswers.some(ans => ans.toString().toLowerCase() === input.toLowerCase());
+      correct = q.correctAnswers.some(ans => 
+    String(ans).toLowerCase() === input.toLowerCase()
+  );
+
   } else {
     correct = input.toLowerCase() === q.answer.toString().toLowerCase();
   }
@@ -238,7 +244,10 @@ selectedQuestions.forEach((q, index) => {
   if (q.binaryAnswer !== undefined) {
     correct = input === q.binaryAnswer;
   } else if (Array.isArray(q.correctAnswers)) {
-    correct = q.correctAnswers.some(ans => ans.toLowerCase() === input.toLowerCase());
+        correct = q.correctAnswers.some(ans => 
+      String(ans).toLowerCase() === input.toLowerCase()
+    );
+
   } else {
     correct = input.toLowerCase() === q.answer.toString().toLowerCase();
   }
