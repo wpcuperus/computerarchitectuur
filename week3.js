@@ -1,3 +1,93 @@
+function generateWeek3FourInputQuestion() {
+  const logicFunctions = {
+    AND: (a, b) => a & b,
+    OR: (a, b) => a | b,
+    NAND: (a, b) => !(a & b) ? 1 : 0,
+    NOR: (a, b) => !(a | b) ? 1 : 0,
+    XOR: (a, b) => a ^ b
+  };
+
+  const mainGateTypes = ['AND', 'OR', 'NAND', 'NOR', 'XOR'];
+
+  // Kies poort voor AB en CD (zelfde type)
+  const gateABCD = mainGateTypes[Math.floor(rng() * mainGateTypes.length)];
+
+  // Kies poort voor de outputs van AB en CD
+  const gateFinal = mainGateTypes[Math.floor(rng() * mainGateTypes.length)];
+
+  // Truth table genereren
+  const truthTable = [];
+  for (let a = 0; a <= 1; a++) {
+    for (let b = 0; b <= 1; b++) {
+      for (let c = 0; c <= 1; c++) {
+        for (let d = 0; d <= 1; d++) {
+          const abVal = logicFunctions[gateABCD](a, b);
+          const cdVal = logicFunctions[gateABCD](c, d);
+          const uVal = logicFunctions[gateFinal](abVal, cdVal);
+          truthTable.push(uVal);
+        }
+      }
+    }
+  }
+
+  const html = `
+<div style="position: relative; width: 600px; height: 300px; font-family: monospace; border: 1px solid #ccc; margin-bottom: 1em;">
+
+  <div style="position: absolute; left: 0; top: 40px; font-weight: bold;">A</div>
+  <div style="position: absolute; left: 20px; top: 45px;">---</div>
+
+  <div style="position: absolute; left: 0; top: 80px; font-weight: bold;">B</div>
+  <div style="position: absolute; left: 20px; top: 85px;">---</div>
+
+  <img src="assets/gates/${gateABCD.toLowerCase()}.png" style="position: absolute; left: 60px; top: 50px;" alt="${gateABCD}" width="100" height="50" />
+
+  <div style="position: absolute; left: 160px; top: 70px;">------------|</div>
+
+  <div style="position: absolute; left: 0; top: 160px; font-weight: bold;">C</div>
+  <div style="position: absolute; left: 20px; top: 165px;">---</div>
+
+  <div style="position: absolute; left: 0; top: 200px; font-weight: bold;">D</div>
+  <div style="position: absolute; left: 20px; top: 205px;">---</div>
+
+  <img src="assets/gates/${gateABCD.toLowerCase()}.png" style="position: absolute; left: 60px; top: 170px;" alt="${gateABCD}" width="100" height="50" />
+
+  <div style="position: absolute; left: 160px; top: 190px;">------------|</div>
+
+  <img src="assets/gates/${gateFinal.toLowerCase()}.png" style="position: absolute; left: 250px; top: 110px;" alt="${gateFinal}" width="100" height="50" />
+
+  <div style="position: absolute; left: 360px; top: 130px;">---</div>
+  <div style="position: absolute; left: 400px; top: 125px; font-weight: bold;">U</div>
+
+</div>
+
+<p>Onderstaande schakeling verwerkt vier invoerwaarden A, B, C en D. Vul de waarde van uitgang <strong>U</strong> in voor alle combinaties van A, B, C en D:</p>
+
+<table border="1" cellpadding="5" style="font-family: monospace;">
+  <tr><th>A</th><th>B</th><th>C</th><th>D</th><th>U</th></tr>
+  ${Array.from({ length: 16 }, (_, i) => {
+    const a = (i & 8) >> 3;
+    const b = (i & 4) >> 2;
+    const c = (i & 2) >> 1;
+    const d = i & 1;
+    return `<tr><td>${a}</td><td>${b}</td><td>${c}</td><td>${d}</td><td>[ ]</td></tr>`;
+  }).join('\n')}
+</table>
+`;
+
+  const answer = truthTable.join('');
+
+  return {
+    id: `logic-gate-4inputs`,
+    title: 'Logische schakeling met 4 inputs',
+    label: html,
+    categories: ['Waarheidstabellen', 'Gates'],
+    hint: `De eerste poort verwerkt A en B, de tweede C en D (zelfde poorttype). De derde poort verwerkt beide uitgangen. Vul de tabel in met de juiste uitgangswaarden U.`,
+    answer: answer,
+    correctAnswers: [answer]
+  };
+}
+
+
 function generateWeek3LogicEquivalenceQuestion() {
   // Symbolen voor operatoren
   const symbols = {
@@ -774,6 +864,8 @@ Bij elke rising edge wordt Q gelijk aan X. Z is 1 als Q kleiner dan of gelijk aa
 `
   });
 }
+
+questions.push(generateWeek3FourInputQuestion());
 
   questions.push(generateWeek3LogicEquivalenceQuestion());
 
