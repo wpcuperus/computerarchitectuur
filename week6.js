@@ -226,11 +226,11 @@ dus ${instructionCount} + 4 = ${totalCycles} klokcycli.`;
     questions.push({
       id: `address-lines-memory-card`,
       title: 'Adreslijnen voor geheugenkaart',
-      label: `Een geheugenkaart bevat ${sizeMB} MB geheugenadressen, hoeveel adreslijnen zijn nodig om dit geheugen te adresseren?`,
+      label: `Een geheugenkaart bevat ${sizeMB} MiB geheugenadressen, hoeveel adreslijnen zijn nodig om dit geheugen te adresseren?`,
       hint: `Gebruik de formule log₂(geheugengrootte in bytes) om het aantal adreslijnen te berekenen. Voorbeeld: log₂(1024) = 10 (2^10 = 1024), dus 10 bits zijn nodig om 1024 adressen aan te duiden.`,
       answer: `${addressLines}`,
       categories: ['Datapath'],
-      explanation: `${sizeMB} MB = ${sizeBytes.toLocaleString()} bytes. Aantal bits om elk uniek adres aan te wijzen = log₂(${sizeBytes}) = ${addressLines} bits.`
+      explanation: `${sizeMB} MiB = ${sizeBytes.toLocaleString()} bytes. Aantal bits om elk uniek adres aan te wijzen = log₂(${sizeBytes}) = ${addressLines} bits.`
     });
   }
 
