@@ -1,7 +1,7 @@
 let rng, selectedQuestions = [];
 let originalIndices = [];
 let usedHints = new Set();
-
+let scoreVisible = false; // <== toggle status
 
 
 function getParams() {
@@ -77,6 +77,19 @@ function generateQuiz() {
 
 
 function checkAnswers() {
+  const scoreElement = document.getElementById('score');
+  
+  if (scoreVisible) {
+    // Tweede klik: reset feedback en scroll terug
+    selectedQuestions.forEach((_, index) => {
+      document.getElementById(`feedback-${index}`).textContent = '';
+    });
+    scoreElement.textContent = '';
+    
+    scoreVisible = false;
+    return;
+  }
+
   let score = 0;
   selectedQuestions.forEach((q, index) => {
     const input = document.getElementById(`q${index}`).value.trim();
@@ -106,6 +119,7 @@ function checkAnswers() {
   });
 
   document.getElementById('score').textContent = `Je score: ${score} van de ${selectedQuestions.length}`;
+
 
 const total = selectedQuestions.length;
 const ignored = Math.floor(total * 0.25);  // Eerste 25% telt niet mee
@@ -149,7 +163,11 @@ if (score < selectedQuestions.length) {
   retryContainer.appendChild(retryButton);
 }
 
+    scoreElement.scrollIntoView({ behavior: 'smooth' });
+
 document.getElementById('score').appendChild(retryContainer);
+
+  scoreVisible = true;
 
 }
 
