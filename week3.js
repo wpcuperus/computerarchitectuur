@@ -87,6 +87,16 @@ function generateWeek3FourInputQuestion() {
   };
 }
 
+function replaceSymbolsWithArch(str) {
+  return str
+    .replace(/⋅/g, 'AND')
+    .replace(/\+/g, 'OR')
+    .replace(/¬/g, 'NOT ')
+    .replace(/⊕/g, 'XOR')
+    .replace(/↑/g, 'NAND')
+    .replace(/↓/g, 'NOR');
+}
+
 
 function generateWeek3LogicEquivalenceQuestion() {
   // Symbolen voor operatoren
@@ -140,7 +150,7 @@ function generateWeek3LogicEquivalenceQuestion() {
   ];
 
   // Kies een willekeurige expressie uit de lijst
-  const chosenIndex = Math.floor(Math.random() * expressions.length);
+  const chosenIndex = Math.floor(rng() * expressions.length);
   const chosen = expressions[chosenIndex];
 
   // Genereer de waarheidstabel voor de originele en de correcte expressie
@@ -173,10 +183,10 @@ function generateWeek3LogicEquivalenceQuestion() {
   );
 
   // Kies 7 willekeurige foute antwoorden
-  filteredAlternatives = filteredAlternatives.sort(() => 0.5 - Math.random()).slice(0, 7);
+  filteredAlternatives = filteredAlternatives.sort(() => 0.5 - rng()).slice(0, 7);
 
   // Voeg het juiste antwoord toe en shuffle
-  const allAnswers = [...filteredAlternatives, chosen.equivalentStr].sort(() => 0.5 - Math.random());
+  const allAnswers = [...filteredAlternatives, chosen.equivalentStr].sort(() => 0.5 - rng());
 
   // Map naar letters A-H
   const letterOptions = ['A','B','C','D','E','F','G','H'];
@@ -198,6 +208,10 @@ function generateWeek3LogicEquivalenceQuestion() {
     feedbackTable += `${a} ${b}     ${valOrig}                        ${valEquiv}\n`;
   });
 
+  const archExprStr = replaceSymbolsWithArch(chosen.exprStr);
+  const archEquivalentStr = replaceSymbolsWithArch(chosen.equivalentStr);
+
+
   // Bouw feedback waarheidstabel als HTML-tabel met expressies tussen haakjes in de kop
 const feedbackTableHtml = `
 <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; text-align: center;">
@@ -205,8 +219,8 @@ const feedbackTableHtml = `
     <tr>
       <th>A</th>
       <th>B</th>
-      <th>Origineel<br><small>(${chosen.exprStr})</small></th>
-      <th>Equivalent<br><small>(${chosen.equivalentStr})</small></th>
+      <th>Origineel<br><small>${chosen.exprStr}</small><br><small>(${archExprStr})</small></th>
+      <th>Equivalent<br><small>${chosen.equivalentStr}</small><br><small>(${archEquivalentStr})</small></th>
     </tr>
   </thead>
   <tbody>
