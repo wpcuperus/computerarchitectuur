@@ -260,7 +260,13 @@ dus ${instructionCount} + 4 = ${totalCycles} klokcycli.`;
       hint: `Bereken eerst het aantal pixels (breedte × hoogte). Bepaal hoeveel bits elke pixel nodig heeft (aantal kleuren × log₂(aantal tinten)). Vermenigvuldig en deel het totaal door 8 om naar bytes om te rekenen.`,
       answer: `${totalBytes}`,
       categories: ['Datapath'],
-      explanation: `${width} × ${height} = ${width * height} pixels. Elk pixel heeft ${numColors} kleur(en) met ${shadesPerColor} tinten, dus ${bitsPerPixel} bits per pixel. Totaal: ${totalBits} bits = ${totalBytes} bytes.`
+explanation: `${width} × ${height} = ${width * height} pixels. `
+  + `Elk pixel heeft ${numColors} kleur(en). `
+  + `Elke kleur heeft ${shadesPerColor} tinten → log₂(${shadesPerColor}) = ${Math.log2(shadesPerColor)} bits per kleur. `
+  + `Bits per pixel: ${numColors} × ${Math.log2(shadesPerColor)} = ${bitsPerPixel} bits. `
+  + `Totaal aantal bits: ${width * height} × ${bitsPerPixel} = ${totalBits} bits. `
+  + `Omrekenen naar bytes: ${totalBits} ÷ 8 = ${Math.floor(totalBits / 8)} bytes `
+  + `(afgerond naar boven: ${totalBytes} bytes om volledige bytes te hebben).`
     });
   }
 
