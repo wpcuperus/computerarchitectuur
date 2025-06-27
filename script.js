@@ -20,12 +20,14 @@ function getQueryParams() {
 
   // Decodeer de weekinformatie
   const weeks = [];
-  for (let i = 0; i < 8; i++) {  // nu 7 bits i.p.v. 6
+  for (let i = 0; i < 9; i++) {  // nu 7 bits i.p.v. 6
     if (weekFlags & (1 << i)) {
   if (i === 6) {
     weeks.push('week2theorie'); // bestaande mapping
   } else if (i === 7) {
     weeks.push('week6theorie'); // nieuwe mapping
+  } else if (i === 8) {
+    weeks.push('week1theorie'); // nieuwe mapping
   } else {
     weeks.push(`week${i + 1}`);
   }
@@ -58,6 +60,9 @@ function generateQuiz() {
   let questions = [];
   if (selectedWeeks.includes('week1')) {
     questions = questions.concat(generateWeek1Questions()); // Voeg week 1 vragen toe
+  }
+  if (selectedWeeks.includes('week1theorie')) {
+    questions = questions.concat(generateWeek1TheoryQuestions()); // Voeg week 1 theorie vragen toe
   }
   if (selectedWeeks.includes('week2')) {
     questions = questions.concat(generateWeek2Questions()); // Voeg week 2 vragen toe
@@ -235,6 +240,7 @@ function getWeekFlagsFromWeeks(weeks) {
     if (week === 'week6') weekFlags |= 1 << 5;
     if (week === 'week2theorie') weekFlags |= 1 << 6; // Nieuwe week 2 theorie
     if (week === 'week6theorie') weekFlags |= 1 << 7; // Nieuwe week 6 theorie
+    if (week === 'week1theorie') weekFlags |= 1 << 8; // Nieuwe week 1 theorie
   });
   return weekFlags;
 }

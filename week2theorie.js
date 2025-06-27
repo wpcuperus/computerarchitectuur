@@ -10,6 +10,10 @@ function randomHex32Aligned() {
 function generateWeek2TheoryQuestions() {
   const questions = [];
 
+    function shuffle(array) {
+    return array.map(x => ({ x, sort: rng() })).sort((a, b) => a.sort - b.sort).map(({ x }) => x);
+  }
+
   // Helper voor random hex getal als string met 8 digits
   function randomHex32() {
     return '0x' + Math.floor(rng() * 0xFFFFFFFF).toString(16).padStart(8, '0').toUpperCase();
@@ -168,6 +172,88 @@ const startAddrStr = startAddrInt.toString(16).padStart(8, '0');
     hint: `Bepaal eerst de offset binnen de regel. Kijk vervolgens welke bytes je nodig hebt op basis van het aantal bits. Vergeet niet om de bytes om te keren bij little endian voordat je ze samenvoegt tot een hexadecimale waarde.`
   });
 }
+  // Vraag 3: Optellen van twee unsigned getallen - welke gebeurtenissen?
+  {
+    const choices = [
+      "Carry",
+      "Overflow",
+      "Carry en Overflow",
+      "Geen van beiden"
+    ];
+
+    const correctAnswer = "Carry";
+
+    questions.push({
+      id: "unsigned-addition-flags",
+      title: "Optellen van twee unsigned getallen",
+      label: `
+<p>Bij het optellen van twee <strong>unsigned</strong> getallen, welke gebeurtenissen kunnen dan optreden?</p>
+<ul>
+  <li>Carry</li>
+  <li>Overflow</li>
+  <li>Carry en Overflow</li>
+  <li>Geen van beiden</li>
+</ul>
+<p>Typ exact één van de bovenstaande opties als antwoord.</p>`,
+      answer: correctAnswer,
+      categories: ['Signed en Unsigned Getallen', 'Overflow'],
+      correctAnswers: [correctAnswer],
+      hint: `Bij unsigned getallen betekent een carry dat het resultaat niet meer binnen het bereik van de representatie past. Overflow is alleen van toepassing bij signed optelling.`,
+      explanation: `
+Bij het optellen van twee <strong>unsigned</strong> getallen kan een <code>carry</code> optreden als het resultaat groter is dan het maximaal representabele getal (bv. 0xFFFFFFFF bij 32-bit). <code>Overflow</code> is een concept dat alleen relevant is bij <strong>signed</strong> getallen.
+`
+    });
+  }
+
+{
+  const correct = "Bij big-endianness wordt de minst significante byte (LSB) op het hoogste geheugenadres geplaatst";
+  const alwaysIncludeIncorrect = "Bij big-endianness wordt de minst-significante byte (LSB) op het laagste geheugenadres geplaatst";
+
+  const incorrectPool = [
+    "Bij big-endianness wordt de meest significante byte (MSB) op het hoogste geheugenadres geplaatst",
+    "Bij little-endianness wordt de meest significante byte (MSB) op het laagste geheugenadres geplaatst",
+    "Bij endianness draait het om de volgorde van bits binnen een byte",
+    "Endianness heeft alleen betrekking op tekstbestanden",
+    "Alle moderne computers gebruiken standaard big-endianness",
+    "Endianness beïnvloedt alleen grafische data",
+    "Endianness is niet relevant bij netwerkcommunicatie",
+    "Endianness bepaalt het aantal bytes per instructie",
+    "Big-endianness en little-endianness betekenen exact hetzelfde",
+    "Endianness komt alleen voor bij programmeertalen, niet bij hardware",
+    "Endianness is alleen belangrijk voor floats, niet voor integers",
+    "Endianness bepaalt of data binair of hexadecimaal wordt opgeslagen",
+    "Endianness speelt geen rol bij bestandsoverdracht",
+    "Elke programmeertaal heeft een vaste endianness",
+    "Endianness zorgt ervoor dat variabelen automatisch gesorteerd worden"
+  ];
+
+  const options = shuffle([
+    correct,
+    alwaysIncludeIncorrect,
+    ...shuffle(incorrectPool).slice(0, 6)
+  ]);
+
+  const labels = "ABCDEFGH".split('');
+  const correctLabel = labels[options.indexOf(correct)];
+
+  const html = `
+<p><strong>Welke uitspraak over endianness is waar?</strong></p>
+<ol type="A">
+  ${options.map(option => `<li>${option}</li>`).join('')}
+</ol>
+<p>Typ de letter van het juiste antwoord:</p>`;
+
+  questions.push({
+    title: 'Endianness',
+    label: html,
+    answer: correctLabel,
+    categories: ['Endianness'],
+    hint: "Denk aan hoe bytes geordend worden in het geheugen, en wat het verschil is tussen big- en little-endian.",
+    correctAnswers: [correctLabel],
+    explanation: `Bij big-endianness wordt de meest significante byte (MSB) op het laagste geheugenadres geplaatst, en dus de minst significante byte (LSB) op het hoogste geheugenadres. Dit is het tegenovergestelde van little-endianness.`
+  });
+}
+
 
 
   return questions;

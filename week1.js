@@ -16,7 +16,8 @@ function generateWeek1Questions() {
     generateOctalSubtractionQuestion(),
     generateSubnetQuestion(),
     generateBaseAdditionToHexQuestion(),
-    generateCustomToDecimalWithFractionQuestion()
+    generateCustomToDecimalWithFractionQuestion(),
+    generateCustomBaseAdditionQuestion()
   ];
 
   return questions;
@@ -416,5 +417,78 @@ function generateCustomToDecimalWithFractionQuestion() {
     // Antwoord met komma en punt worden beide geaccepteerd
     correctAnswers: [decimalAnswer.toFixed(1), decimalAnswer.toFixed(1).replace('.', ',')],  // evt met meer decimalen
     explanation: `${customNumber} in het ${base}-tallig stelsel is ${wholeStr} = ${wholeValueDecimal} + ${fractionalDigit}/${base} = ${decimalAnswer.toFixed(4)} in decimaal.`
+  };
+}
+
+function generateDecimalWithFractionToCustomQuestion() {
+  const allowedBases = [5, 6, 7, 9, 11, 12, 13, 14, 15];
+  const base = allowedBases[Math.floor(rng() * allowedBases.length)];
+
+  const wholeDecimal = Math.floor(rng() * 50); 
+  const wholeStr = wholeDecimal.toString(base).toUpperCase();
+
+  const decimalFraction = (Math.floor(rng() * 9) + 1) / 10;
+
+  let fractionalDigit = null;
+  for (let i = 1; i < base; i++) {
+    const value = i / base;
+    if (Math.abs(value - decimalFraction) < 0.000001) {
+      fractionalDigit = i;
+      break;
+    }
+  }
+
+  if (fractionalDigit === null) return generateDecimalWithFractionToCustomQuestion();
+
+  const fractionalChar = digitToChar(fractionalDigit);
+  const customNumber = `${wholeStr}.${fractionalChar}`;
+  
+  const wholeValueDecimal = parseInt(wholeStr, base);
+  const decimalAnswer = wholeValueDecimal + (fractionalDigit / base);
+
+  const hint = `${wholeStr} = ${wholeValueDecimal} in decimaal, dus\n${wholeValueDecimal} + ${fractionalDigit} / ${base} = ?`;
+
+  
+  return {
+    questionnumber: 18,
+    id: 'decimal-to-custom-fraction',
+    title: 'Conversie van decimaal naar aangepast talstelsel met fractioneel getal',
+    categories: ['Talstelsels'],
+    label: `Gegeven het decimale getal ${decimalAnswer.toFixed(1)}. Wat is de waarde van dit getal in het ${base}-tallige stelsel?`,
+    hint: hint,
+    answer: customNumber,
+    correctAnswers: [customNumber],
+    explanation: `${decimalAnswer.toFixed(4)} in decimaal is gelijk aan ${customNumber} in het ${base}-tallige stelsel.`
+  };
+}
+
+function generateCustomBaseAdditionQuestion() {
+  // Kies willekeurig een geldig grondtal (3–15, zonder 8 en 10)
+  const validBases = [3, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15];
+  const base = validBases[Math.floor(rng() * validBases.length)];
+
+  // Kies twee decimale getallen tussen 1 en 255
+  const val1Dec = Math.floor(rng() * 255) + 1;
+  const val2Dec = Math.floor(rng() * 255) + 1;
+  const sumDec = val1Dec + val2Dec;
+
+  // Converteer naar het gekozen grondtal
+  const val1Base = val1Dec.toString(base).toUpperCase();
+  const val2Base = val2Dec.toString(base).toUpperCase();
+  const sumBase = sumDec.toString(base).toUpperCase();
+
+  const baseLabel = `${base}-tallige`;
+  const digitsList = [...Array(Math.max(...[val1Dec, val2Dec, sumDec]).toString(base).length)].map((_, i) => `${base}^${i}`).reverse().join(', ');
+
+  return {
+    questionnumber: 17,
+    id: 'custom-base-addition',
+    title: 'Optelling in aangepast talstelsel',
+    categories: ['Talstelsels'],
+    label: `Wat is de uitkomst, in het ${baseLabel} stelsel, van het optellen van de ${baseLabel} getallen ${val1Base} en ${val2Base}?`,
+    hint: `Zet beide getallen eerst om naar decimaal, tel ze op en zet het resultaat terug naar het ${baseLabel} stelsel.`,
+    answer: sumBase,
+    correctAnswers: [sumBase],
+    explanation: `${val1Base} = ${val1Dec}, ${val2Base} = ${val2Dec}, dus ${val1Dec} + ${val2Dec} = ${sumDec}, wat in het ${baseLabel} stelsel ${sumBase} is.`
   };
 }

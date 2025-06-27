@@ -288,10 +288,166 @@ explanation: `${width} × ${height} = ${width * height} pixels. `
       label: `Gegeven een systeem met een woordbreedte van 1 byte, een (maximaal) geheugen van ${memoryMB} MiB en een cache van ${cacheKB} KiB. <br> Bij direct mapped cache, hoeveel bits is het tag-veld van dit systeem?`,
       hint: `Onthoud dat 1 MiB gelijkstaat aan 2^20 bytes <a href="https://nl.wikipedia.org/wiki/Veelvouden_van_bytes">meer info</a>. Bereken met deze informatie het aantal bits voor adres. De cache is gelijk aan een macht van 2 (bijv. 512 regels = 2^9 regels). Adres - index - offset = tag bits.`,
       answer: `${tagBits}`,
+    
       categories: ['Caching'],
       explanation: `Geheugen: ${memoryBytes.toLocaleString()} bytes → ${addressBits} adresbits.<br>Cache met ${cacheKB} KB = ${cacheLines} regels → ${indexBits} indexbits.<br>Tag = ${addressBits} - ${indexBits} - ${offsetBits} = ${tagBits} bits.`
     });
   }
+
+    {
+    const hitCyclesOptions = [1, 2, 3, 4, 5];
+    const missPenaltyOptions = [10, 15, 20, 25, 30];
+
+    const hitCycles = hitCyclesOptions[Math.floor(rng() * hitCyclesOptions.length)];
+    const missPenalty = missPenaltyOptions[Math.floor(rng() * missPenaltyOptions.length)];
+
+    const amatNsOptions = [5, 6, 7, 8, 9, 10]; // Allemaal realistisch voor dit soort berekening
+    const amatNs = amatNsOptions[Math.floor(rng() * amatNsOptions.length)];
+
+    const amatCycles = amatNs; // 1 ns per klokperiode
+
+    // AMAT = h × hit + (1 - h) × missPenalty
+    // amat = h * hit + (1 - h) * miss => solve for h
+    // => h = (missPenalty - amat) / (missPenalty - hit)
+    const h = (missPenalty - amatCycles) / (missPenalty - hitCycles);
+    const hitRatioPercent = Math.round(h * 100);
+
+    const html = `
+      <p>Gegeven een processor met de volgende gegevens:</p>
+      <ul>
+        <li>1 nanoseconde (ns) per clock-cycle (klokperiode)</li>
+        <li><code>cache hit</code> toegangstijd = ${hitCycles} clock-cycles (klokperiodes)</li>
+        <li><code>cache miss</code> penalty = ${missPenalty} clock-cycles (klokperiodes)</li>
+      </ul>
+      <p>Stel de gemiddelde toegangstijd (AMAT) tot het geheugen is <strong>${amatNs} ns</strong>. Wat is dan de <strong>cache hit ratio</strong>?</p>
+    `;
+
+    questions.push({
+      id: `amat-hit-ratio-${hitCycles}-${missPenalty}-${amatNs}`,
+      title: 'Cache Hit Ratio uit AMAT',
+      label: html.trim(),
+      hint: 'Gebruik de formule: AMAT = hit_ratio × hit_time + (1 - hit_ratio) × miss_penalty',
+      answer: `${hitRatioPercent}`,
+      correctAnswers: [`${hitRatioPercent}`, `${hitRatioPercent}%`],
+      categories: ['Caching', 'RISC-V'],
+      explanation: `De gemiddelde toegangstijd is:\nAMAT = h × ${hitCycles} + (1 - h) × ${missPenalty} = ${amatCycles}\nLos dit op voor h:\nh = (${missPenalty} - ${amatCycles}) / (${missPenalty} - ${hitCycles}) = ${hitRatioPercent}%`
+    });
+  }
+
+{
+  const toBin = (num, len) => num.toString(2).padStart(len, '0');
+  const randByte = () => Math.floor(rng() * 256);
+  const randBit = () => rng() < 0.5 ? 'Y' : 'N';
+
+  const cacheSize = 8;
+  const blockSize = 2;
+  const addressBits = 8;
+  const offsetBits = Math.log2(blockSize);
+  const indexBits = Math.log2(cacheSize);
+  const tagBits = addressBits - indexBits - offsetBits;
+
+  const cache = [];
+  for (let i = 0; i < cacheSize; i++) {
+    const valid = randBit();
+    const tag = toBin(Math.floor(rng() * (1 << tagBits)), tagBits);
+    const data1 = randByte().toString().padStart(3, '0');
+    const data2 = randByte().toString().padStart(3, '0');
+    cache.push({ index: i, valid, tag, data: [data1, data2] });
+  }
+
+  const generateAddress = (shouldHit) => {
+    // Kies random index
+    const index = Math.floor(rng() * cacheSize);
+    const offset = Math.floor(rng() * blockSize); // 0 of 1 → offset = 0 of 1
+    const entry = cache[index];
+    let tag;
+
+    if (shouldHit && entry.valid === 'Y') {
+      // hit: gebruik correcte tag
+      tag = entry.tag;
+    } else if (!shouldHit || entry.valid !== 'Y') {
+      // miss: kies andere tag dan die in cache[index]
+      let newTag;
+      do {
+        newTag = toBin(Math.floor(rng() * (1 << tagBits)), tagBits);
+      } while (entry.valid === 'Y' && newTag === entry.tag);
+      tag = newTag;
+    }
+
+    // Maak binaire adresstring: tag | index | offset
+    const addrBin = tag + toBin(index, indexBits) + toBin(offset, offsetBits);
+    return parseInt(addrBin, 2);
+  };
+
+  // Willekeurig beslissen of elk adres een hit of miss moet zijn
+  const addr1ShouldHit = rng() < 0.5;
+  const addr2ShouldHit = rng() < 0.5;
+
+  const addr1 = generateAddress(addr1ShouldHit);
+  const addr2 = generateAddress(addr2ShouldHit);
+
+  const parseAddress = (addr) => {
+    const bin = toBin(addr, 8);
+    return {
+      tag: bin.substring(0, tagBits),
+      index: parseInt(bin.substring(tagBits, tagBits + indexBits), 2),
+      offset: parseInt(bin.substring(tagBits + indexBits), 2),
+    };
+  };
+
+  const addr1info = parseAddress(addr1);
+  const addr2info = parseAddress(addr2);
+
+  const result = (info) => {
+    const entry = cache[info.index];
+    return entry.valid === 'Y' && entry.tag === info.tag ? 'hit' : 'miss';
+  };
+
+  const outcome = `${result(addr1info)}, ${result(addr2info)}`;
+  const addr1hex = `0x${addr1.toString(16).padStart(2, '0')}`;
+  const addr2hex = `0x${addr2.toString(16).padStart(2, '0')}`;
+
+  // Genereer de HTML-tabel
+  let tableHTML = `
+    <p>Voor een 'direct mapped' cache is gegeven dat de cache size (aantal entries) 8 is en dat de blokgrootte (aantal bytes data per entry) 2 is.</p>
+    <p>In onderstaande tabel is de huidige inhoud van de cache weergegeven.</p>
+    <table>
+      <thead>
+        <tr><th>Index (dec)</th><th>Valid-bit (Y/N)</th><th>Tag (binair)</th><th>Data (dec)</th><th>Data (dec)</th></tr>
+      </thead>
+      <tbody>
+        ${cache.map(row => `
+          <tr>
+            <td>${row.index}</td>
+            <td>${row.valid}</td>
+            <td>${row.tag}</td>
+            <td>${row.data[0]}</td>
+            <td>${row.data[1]}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <p>Neem aan dat een geheugenadres uit 8 bits bestaat.</p>
+    <p>Wat is het resultaat als achtereenvolgens de data van de adressen <strong>${addr1hex}</strong> en <strong>${addr2hex}</strong> wordt opgevraagd bij de cache?<br>
+    Geef eerst het antwoord voor ${addr1hex} en dan voor ${addr2hex} (bijvoorbeeld: "miss, miss").</p>
+  `;
+
+  questions.push({
+    id: `cache-tabel-vraag-${addr1hex}-${addr2hex}`,
+    title: 'Cache tabel en address decoding',
+    label: tableHTML.trim(),
+    hint: 'Gebruik de tag en index uit het binaire adres en vergelijk met de inhoud van de cache.',
+    answer: outcome,
+    correctAnswers: [outcome.toLowerCase(), outcome.toUpperCase(), outcome],
+    categories: ['Caching'],
+    explanation: `Adres ${addr1hex} = ${toBin(addr1, 8)} → tag = ${addr1info.tag}, index = ${addr1info.index}\n` +
+                 `Adres ${addr2hex} = ${toBin(addr2, 8)} → tag = ${addr2info.tag}, index = ${addr2info.index}\n` +
+                 `Controleer of de valid-bit op 'Y' staat en of de tag overeenkomt voor elke index.`
+  });
+}
+
+
+
 
   return questions;
 }

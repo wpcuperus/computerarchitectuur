@@ -303,5 +303,93 @@ De andere registers die gebruikt worden (<code>x10</code>, <code>s3</code>, <cod
   }
 
 
+  // Nieuwe meerkeuzevraag met 4 codevarianten en antwoord A-D
+  {
+    // Kies willekeurig een antwoord A t/m D
+    const choices = ['A', 'B', 'C', 'D'];
+    const selectedIndex = Math.floor(rng() * 4);
+    const correctLabel = choices[selectedIndex];
+
+    // Basis assembly voor elk type procedure (afgekort)
+    // A: recursief
+    // B: leaf procedure (geen oproepen)
+    // C: non-leaf procedure (roept andere procedures aan, maar niet recursief)
+    // D: recursief én non-leaf
+    const assemblyVariants = {
+      A: `
+factorial:
+  li t0, 1
+  ble a0, t0, base_case
+  addi a0, a0, -1
+  jal factorial
+  mul a0, a0, t0
+  ret
+base_case:
+  li a0, 1
+  ret
+`,
+
+      B: `
+proc:
+  li a0, 42
+  ret
+`,
+
+      C: `
+proc:
+  jal other_proc
+  ret
+other_proc:
+  li a0, 10
+  ret
+`,
+
+      D: `
+fact_rec:
+  li t0, 1
+  ble a0, t0, base_case
+  addi a0, a0, -1
+  jal fact_rec
+  mul a0, a0, t0
+  jal some_helper
+  ret
+base_case:
+  li a0, 1
+  ret
+some_helper:
+  li t1, 99
+  ret
+`
+    };
+
+    const questionText = `
+<p>Gegeven onderstaande regels in RISC-V assembly code (32 bit).</p>
+<pre><code>${assemblyVariants[correctLabel]}</code></pre>
+<p>De vraag gaat over de procedure(s) die hierboven getoond worden. Wat weet je van deze procedure(s)?</p>
+<p>Kies het juiste antwoord:</p>
+<strong>A.</strong> Het is een recursieve procedure<br>
+<strong>B.</strong> Het is een leaf procedure<br>
+<strong>C.</strong> Het is een non-leaf procedure<br>
+<strong>D.</strong> Het is zowel een recursieve als een non-leaf procedure
+`;
+
+    questions.push({
+      id: 'procedure-type-mcq',
+      title: 'Type procedure herkennen',
+      label: questionText,
+      categories: ['Procedure Calls (Leaf and non-leaf)', 'RISC-V'],
+      hint: 'Analyseer of er een procedure-aanroep is, en of die naar zichzelf verwijst.',
+      answer: correctLabel,
+      correctAnswers: [correctLabel],
+      explanation: {
+        A: 'De procedure roept zichzelf aan (recursief), maar roept geen andere procedures aan (geen non-leaf).',
+        B: 'De procedure roept geen andere procedures aan (leaf).',
+        C: 'De procedure roept andere procedures aan, maar niet zichzelf (non-leaf).',
+        D: 'De procedure is recursief en roept daarnaast andere procedures aan (recursief én non-leaf).'
+      }[correctLabel],
+    });
+  }
+
+
   return questions;
 }

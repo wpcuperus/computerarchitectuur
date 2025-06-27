@@ -23,6 +23,7 @@ function mulberry32(a) {
 function loadAllQuestions() {
   return [
     ...generateWeek1Questions(),
+    ...generateWeek1TheoryQuestions(),
     ...generateWeek2Questions(),
     ...generateWeek2TheoryQuestions(),
     ...generateWeek3Questions(),

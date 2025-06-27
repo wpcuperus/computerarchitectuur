@@ -7,6 +7,16 @@ function toTwosComplement(value, bits) {
   return value.toString(2).padStart(bits, '0');
 }
 
+function toOnesComplement(value, bits) {
+  if (value >= 0) {
+    return value.toString(2).padStart(bits, '0');
+  } else {
+    const max = (1 << bits) - 1;
+    return (~(-value) & max).toString(2).padStart(bits, '0');
+  }
+}
+
+
 function toTwosComplementBinary(value, bits) {
   let intVal = parseInt(value, 10);
   if (intVal < 0) {
@@ -416,6 +426,161 @@ questions.push({
     categories: ['Floating Point'],
     answer: selectedType,
     explanation: generateIEEEExplanation(factor, selectedType)
+  });
+}
+// Dynamische vraag: Unsigned integer bewerking via delen/verm.
+{
+  const bitsOptions = [4, 5, 6, 7, 8];
+  const bits = bitsOptions[Math.floor(rng() * bitsOptions.length)];
+  const maxUnsigned = (1 << bits) - 1;
+
+  const initialValue = Math.floor(rng() * (maxUnsigned + 1)); // tussen 0 en max
+  const factors = [2, 4, 8];
+  const div = factors[Math.floor(rng() * factors.length)];
+  const mul = factors[Math.floor(rng() * factors.length)];
+  const order = rng() < 0.5 ? 'div-first' : 'mul-first';
+
+  let intermediate, finalValue, operationsText;
+
+  if (order === 'div-first') {
+    intermediate = Math.floor(initialValue / div);
+    finalValue = intermediate * mul;
+    operationsText = `We delen de waarde van dit register met '${div}'. Hierna vermenigvuldigen we de waarde met '${mul}'.`;
+  } else {
+    intermediate = initialValue * mul;
+    finalValue = Math.floor(intermediate / div);
+    operationsText = `We vermenigvuldigen de waarde van dit register met '${mul}'. Hierna delen we de waarde met '${div}'.`;
+  }
+
+  // Beperk tot binnen bereik, anders opnieuw genereren
+  if (finalValue <= maxUnsigned) {
+    questions.push({
+      id: `unsigned-register-${bits}-${order}-${initialValue}-${div}-${mul}`,
+      title: 'Unsigned Integer Register Bewerking',
+      label: `In een ${bits}-bits register is het decimale getal '${initialValue}' opgeslagen. ${operationsText}<br><br>
+Wat is hierna de decimale waarde van dit register als we de waarde interpreteren als een <strong>unsigned integer</strong>?`,
+      categories: ['Unsigned Getallen', 'Binair', 'Registerbewerking'],
+      hint: `Bij unsigned integers is er geen negatieve waarde. Na elke stap (delen of vermenigvuldigen), controleer of het resultaat nog past binnen ${bits} bits (max. ${maxUnsigned}).`,
+      answer: finalValue.toString(),
+      binaryAnswer: finalValue.toString(2).padStart(bits, '0'),
+      explanation: `Het begingetal is ${initialValue}. Eerst wordt het ${order === 'div-first' ? `gedeeld door ${div}: ⌊${initialValue}/${div}⌋ = ${intermediate}` : `vermenigvuldigd met ${mul}: ${initialValue} × ${mul} = ${intermediate}`}. Daarna wordt het ${order === 'div-first' ? `vermenigvuldigd met ${mul}: ${intermediate} × ${mul}` : `gedeeld door ${div}: ⌊${intermediate}/${div}⌋`} = ${finalValue}.`
+    });
+  }
+}
+
+{
+  // Kies 4 of 12 bits
+  const bits = rng() < 0.5 ? 4 : 12;
+  const min = -(1 << (bits - 1)) + 1; // One's complement min is -(2^(bits-1) - 1)
+  const max = (1 << (bits - 1)) - 1;
+  
+  // Genereer een getal binnen het valid bereik van one's complement
+  const value = Math.floor(rng() * (max - min + 1)) + min;
+  
+  // Kies randomly one's of two's complement
+  const useOnes = rng() < 0.5;
+
+  // Bepaal de binary representatie
+  const binary = useOnes ? toOnesComplement(value, bits) : toTwosComplement(value, bits);
+
+  questions.push({
+    questionnumber: 21,
+    id: `complement-${bits}-${useOnes ? 'ones' : 'twos'}`,
+    title: `Decimaal naar One's of Two's Complement`,
+    label: `Schrijf het decimale getal ${value} als een ${bits} bits ${useOnes ? "one's" : "two's"} complement getal.`,
+    categories: ["Signed en Unsigned Getallen", "Two's Complement"],
+    hint: `Zet het decimale getal ${value} om naar ${bits} bits ${useOnes ? "one's" : "two's"} complement binair.`,
+    answer: value.toString(),
+    binaryAnswer: binary,
+    explanation: `Het getal ${value} in ${bits} bits ${useOnes ? "one's" : "two's"} complement is: ${binary}`
+  });
+}
+
+// Nieuwe vraag: IEEE754 hex getal met tabel en multiple choice
+{
+  const buffer = new ArrayBuffer(4);
+  const view = new DataView(buffer);
+
+  // Willekeurig float getal genereren via seed rng(), in bereik [-100, 100)
+  const floatVal = (rng() * 200 - 100).toFixed(6);
+  view.setFloat32(0, parseFloat(floatVal), false); // big endian
+
+  // Haal hex representatie (4 bytes)
+  const hex = [...Array(4)]
+    .map((_, i) => view.getUint8(i).toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+
+  // Haal 32-bit binair
+  const binary = [...Array(4)]
+    .map((_, i) => view.getUint8(i).toString(2).padStart(8, '0'))
+    .join('');
+
+  // Bits opsplitsen
+  const signBit = binary[0];
+  const exponentBits = binary.slice(1, 9);
+  const fractionBits = binary.slice(9);
+
+  // Antwoord bepalen (voor eenvoud):
+  // Negatief = signBit 1
+  // Absoluut getal groter dan 1 als exponent-127 > 0
+  const exponentVal = parseInt(exponentBits, 2);
+  const exponentBias = 127;
+  const exponentActual = exponentVal - exponentBias;
+
+  let correctAnswer;
+  if (signBit === '1' && exponentActual < 0) correctAnswer = 'A';  // negatief, groter dan -1
+  else if (signBit === '0' && exponentActual < 0) correctAnswer = 'B'; // positief, kleiner dan 1
+  else if (signBit === '1' && exponentActual >= 0) correctAnswer = 'C'; // negatief, kleiner dan -1
+  else correctAnswer = 'D'; // positief, groter dan 1
+
+  // HTML tabel van bits (format rij 31 t/m 0, met labels)
+  const bitLabels = [
+    's', 'exponent', 'fraction'
+  ];
+
+  // Maak tabel rij met bits: 31..0
+  const bitIndices = [...Array(32)].map((_, i) => 31 - i);
+
+  // Rijen voor labels (s, exponent, fraction) per bit
+  // s: bit 31
+  // exponent: bits 30..23 (8 bits)
+  // fraction: bits 22..0 (23 bits)
+
+  // Functie om een cel te kleuren of labelen
+  function bitCell(bitIndex) {
+    if (bitIndex === 31) return `<td style="background:#ffcccc;text-align:center;">s</td>`;
+    if (bitIndex >= 23 && bitIndex <= 30) return `<td style="background:#ccffcc;text-align:center;">e</td>`;
+    return `<td style="background:#ccccff;text-align:center;">f</td>`;
+  }
+
+  // Maak rij met bit posities
+  const rowBits = bitIndices.map(i => `<td style="border:1px solid #000;text-align:center;">${i}</td>`).join('');
+  // Rij met bit labels
+  const rowLabels = bitIndices.map(i => bitCell(i)).join('');
+  // Rij met bitwaarden
+  const rowValues = bitIndices.map(i => `<td style="border:1px solid #000;text-align:center;">${binary[i]}</td>`).join('');
+
+  questions.push({
+    questionnumber: 21,
+    id: `ieee754-hex-question`,
+    title: 'IEEE 754 Floating Point Getal Analyse',
+    label: `Gegeven het IEEE 754 floating point getal <code>0x${hex}</code> volgens onderstaande tabel:<br><br>
+<table style="border-collapse: collapse; margin: 1em 0;">
+  <tr>${rowBits}</tr>
+  <tr>${rowLabels}</tr>
+</table>
+<p>Wat weet je van dit getal?</p>
+<ol type="A">
+<li>Het getal is negatief en groter dan -1</li>
+<li>Het getal is positief en kleiner dan 1</li>
+<li>Het getal is negatief en kleiner dan -1</li>
+<li>Het getal is positief en groter dan 1</li>
+</ol>
+<p>Typ de letter van het antwoord dat je geeft.</p>`,
+    categories: ['Floating Point'],
+    hint: `Bekijk het tekenbit (s), de exponent en het effect van de exponent op de waarde. Exponent = exponent_bits - 127.`,
+    answer: correctAnswer
   });
 }
 

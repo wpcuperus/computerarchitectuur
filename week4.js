@@ -1,3 +1,28 @@
+function encodeJAL(rd, offset) {
+  // RISC-V jal immediate is in multiples of 2 and is 21 bits signed
+  const imm = offset;
+  const imm20 = (imm >> 20) & 0x1;
+  const imm10_1 = (imm >> 1) & 0x3ff;
+  const imm11 = (imm >> 11) & 0x1;
+  const imm19_12 = (imm >> 12) & 0xff;
+
+  const opcode = 0b1101111;
+  const rdVal = rd; // x0 = 0
+
+  const instruction =
+    (imm20 << 31) |
+    (imm19_12 << 12) |
+    (imm11 << 20) |
+    (imm10_1 << 21) |
+    (rdVal << 7) |
+    opcode;
+
+  return instruction >>> 0; // unsigned
+}
+
+// Week 4: Basic Assembly
+// Categorieën: RISC-V, branching, bitwise operators, arrays, overflow
+
 function generateWeek4Questions() {
   const questions = [];
 
@@ -688,6 +713,149 @@ De 16-bit waarde is <code>0x${b1.toString(16).toUpperCase().padStart(2, '0')}${b
     explanation: uitleg.trim()
   });
 }
+
+{
+  const ops = ['xor', 'or', 'and', 'add', 'sub'];
+  const op = ops[Math.floor(rng() * ops.length)];
+
+  const rd = `x${Math.floor(rng() * 28) + 2}`;   // geen x0, x1, of x31
+  const rs = `x${Math.floor(rng() * 28) + 2}`;
+  const imm1 = Math.floor(rng() * 240) + 1;  // 1..240
+  const imm2 = Math.floor(rng() * 240) + 1;
+
+  const imm1Str = rng() < 0.5 ? `0x${imm1.toString(16).toUpperCase()}` : `${imm1}`;
+  const imm2Str = rng() < 0.5 ? `0x${imm2.toString(16).toUpperCase()}` : `${imm2}`;
+
+  let result;
+  switch (op) {
+    case 'xor': result = imm1 ^ imm2; break;
+    case 'or': result = imm1 | imm2; break;
+    case 'and': result = imm1 & imm2; break;
+    case 'add': result = (imm1 + imm2) & 0xFFFFFFFF; break;
+    case 'sub': result = (imm1 - imm2 + 0x100000000) & 0xFFFFFFFF; break;
+  }
+
+  const askHex = rng() < 0.5;
+  const correct = askHex ? `0x${result.toString(16).toUpperCase()}` : `${result}`;
+  
+
+  const html = `
+<p><strong>Gegeven onderstaande RISC-V assembly code (32 bit). Wat is de waarde van ${rd} als het programma op regel 5 is beland?</strong></p>
+<pre>
+  addi ${rd}, zero, ${imm1Str}
+  addi ${rs}, zero, ${imm2Str}
+  ${op} ${rd}, ${rd}, ${rs}
+end:  j end
+</pre>
+<p>Geef je antwoord in ${askHex ? "hexadecimale" : "decimale"} notatie.</p>`;
+
+  questions.push({
+    title: 'Waarde van register berekenen in RISC-V',
+    label: html,
+    answer: correct,
+    categories: ['RISC-V', 'Bitwise operators'],
+    hint: `De addi-instructies laden immediates in registers, daarna wordt met ${op} een bewerking uitgevoerd tussen ${rd} en ${rs}.`,
+    correctAnswers: [correct],
+    explanation: `Eerst krijgt ${rd} de waarde ${imm1}, en ${rs} krijgt ${imm2}. Daarna wordt de ${op}-operatie toegepast tussen deze waarden. Het resultaat komt weer in ${rd}.`
+  });
+}
+
+{
+  const baseRegIndex = Math.floor(rng() * 25) + 5; // x5 – x29
+  const reg1 = `x${baseRegIndex}`;
+  const reg2 = `x${baseRegIndex + 1}`;
+  const reg3 = `x${baseRegIndex + 2}`;
+
+  // Genereer array van 10 willekeurige getallen tussen -20 en 20
+  const arr = Array.from({ length: 10 }, () => Math.floor(rng() * 41) - 20);
+
+  // Kies twee indexen in het bereik [0, 9]
+  const idx1 = Math.floor(rng() * 8);       // max 8 om overflow te vermijden
+  const idx2 = idx1 + 1 + Math.floor(rng() * (9 - idx1)); // altijd > idx1
+
+  const offset1 = idx1 * 4;
+  const offset2 = idx2 * 4;
+
+  const val1 = arr[idx1];
+  const val2 = arr[idx2];
+
+  const asm = `
+.data
+  arr: .word ${arr.join(' ')}
+.text
+  la ${reg1}, arr
+  lw ${reg2}, ${offset1}(${reg1})
+  lw ${reg3}, ${offset2}(${reg1})`.trim();
+
+  questions.push({
+    title: 'Lezen uit array met lw en offset',
+    label: `
+<p><strong>Gegeven onderstaande assembly code:</strong></p>
+<pre><code>${asm}</code></pre>
+<p>Wat zijn de decimale waarden van de registers <code>${reg2}</code> en <code>${reg3}</code> na het uitvoeren van deze code?</p>
+<p>Antwoordformaat: <code>${reg2} = ...</code> en <code>${reg3} = ...</code></p>`,
+    answer: `${reg2} = ${val1} en ${reg3} = ${val2}`,
+    categories: ['RISC-V', 'Arrays'],
+    hint: `Een 'word' is 4 bytes groot. Gebruik de offset om het juiste element te berekenen.`,
+    correctAnswers: [
+      `${reg2} = ${val1} en ${reg3} = ${val2}`,
+      `${reg3} = ${val2} en ${reg2} = ${val1}`
+    ],
+    explanation: `De array bevat: ${arr.join(', ')}.<br>
+<code>la ${reg1}, arr</code> laadt het adres van het eerste element.<br>
+<code>lw ${reg2}, ${offset1}(${reg1})</code> leest waarde op index ${idx1} = ${val1}.<br>
+<code>lw ${reg3}, ${offset2}(${reg1})</code> leest waarde op index ${idx2} = ${val2}.`
+  });
+}
+
+{
+  const baseRegIndex = Math.floor(rng() * 25) + 5; // x5 – x29
+  const reg1 = `x${baseRegIndex}`;
+  const reg2 = `x${baseRegIndex + 1}`;
+  const reg3 = `x${baseRegIndex + 2}`;
+
+  // Genereer array van 10 willekeurige getallen tussen -20 en 20
+  const arr = Array.from({ length: 10 }, () => Math.floor(rng() * 41) - 20);
+
+  // Kies twee indexen in het bereik [0, 9]
+  const idx1 = Math.floor(rng() * 8);       // max 8 om overflow te vermijden
+  const idx2 = idx1 + 1 + Math.floor(rng() * (9 - idx1)); // altijd > idx1
+
+  const offset1 = idx1 * 4;
+  const offset2 = idx2 * 4;
+
+  const val1 = arr[idx1];
+  const val2 = arr[idx2];
+
+  const asm = `
+.data
+  arr: .word ${arr.join(' ')}
+.text
+  la ${reg1}, arr
+  lw ${reg2}, ${offset1}(${reg1})
+  lw ${reg3}, ${offset2}(${reg1})`.trim();
+
+  questions.push({
+    title: 'Lezen uit array met lw en offset',
+    label: `
+<p><strong>Gegeven onderstaande assembly code:</strong></p>
+<pre><code>${asm}</code></pre>
+<p>Wat zijn de decimale waarden van de registers <code>${reg2}</code> en <code>${reg3}</code> na het uitvoeren van deze code?</p>
+<p>Antwoordformaat: <code>${reg2} = ...</code> en <code>${reg3} = ...</code></p>`,
+    answer: `${reg2} = ${val1} en ${reg3} = ${val2}`,
+    categories: ['RISC-V'],
+    hint: `Een 'word' is 4 bytes groot. Gebruik de offset om het juiste element te berekenen.`,
+    correctAnswers: [
+      `${reg2} = ${val1} en ${reg3} = ${val2}`,
+      `${reg3} = ${val2} en ${reg2} = ${val1}`
+    ],
+    explanation: `De array bevat: ${arr.join(', ')}.<br>
+<code>la ${reg1}, arr</code> laadt het adres van het eerste element.<br>
+<code>lw ${reg2}, ${offset1}(${reg1})</code> leest waarde op index ${idx1} = ${val1}.<br>
+<code>lw ${reg3}, ${offset2}(${reg1})</code> leest waarde op index ${idx2} = ${val2}.`
+  });
+}
+
 
   return questions;
 }

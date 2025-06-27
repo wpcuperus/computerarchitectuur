@@ -225,5 +225,53 @@ function generateWeek6TheoryQuestions() {
     });
   }
 
+{
+  const optiesTekst = `
+<br><br>
+A: In ongeveer 25% van de gevallen<br>
+B: Ongeveer 50%<br>
+C: Bijna 100%<br>
+D: Nauwelijks tot niet.
+`;
+
+  const situations = [
+    {
+      label: `Je schrijft een stuk RISC-V code (32 bits) dat het RAM-geheugen doorloopt met sprongen van 16 bytes, terwijl de cache direct-mapped is met een blokgrootte van 4 bytes en de cachegrootte klein is (bijvoorbeeld 64 bytes). In hoeverre is er dan sprake van cache-hits als het gaat om het datageheugen?` + optiesTekst,
+      correctAnswer: 'A',
+      explanation: `Omdat je steeds sprongen van 16 bytes maakt, worden verschillende indexen in de cache aangesproken, maar door de kleine cacheomvang overschrijft data zich regelmatig. Hierdoor is er slechts in ~25% van de gevallen een hit.`
+    },
+    {
+      label: `Je schrijft een stuk RISC-V code (32 bits) dat het geheugen doorloopt in stappen van 8 bytes. De cache is direct-mapped, blokgrootte 4 bytes, en er is voldoende cache om ~50% van de blokken vast te houden. In hoeverre is er dan sprake van cache-hits als het gaat om het datageheugen?` + optiesTekst,
+      correctAnswer: 'B',
+      explanation: `Door de toegangssprongen en de cachecapaciteit is ongeveer de helft van de data al aanwezig wanneer opnieuw opgevraagd. Hierdoor ~50% hits.`
+    },
+    {
+      label: `Je schrijft een stuk RISC-V code (32 bits) dat een array meerdere keren lineair doorloopt met een stapgrootte van 4 bytes. De cache is direct-mapped, blokgrootte ook 4 bytes, en de array past netjes in de cache. In hoeverre is er dan sprake van cache-hits als het gaat om het datageheugen?` + optiesTekst,
+      correctAnswer: 'C',
+      explanation: `De eerste doorloop veroorzaakt misses, maar daarna blijft alles in de cache. Bij volgende iteraties bijna 100% cache hits.`
+    },
+    {
+      label: `Je schrijft een stuk code RISC-V code (32 bits) dat van het begin tot het eind het (RAM) datageheugen doorloopt, steeds per 4 bytes. De gebruikte cachetechniek is direct memory mapped cache. De cachebreedte is ook 4 bytes. In hoeverre is er dan sprake van cache-hits als het gaat om het datageheugen?` + optiesTekst,
+      correctAnswer: 'D',
+      explanation: `Omdat elk nieuw blok steeds een andere index in de cache overschrijft (en oude blokken niet behouden blijven), is er nauwelijks sprake van cache hits.`
+    }
+  ];
+
+  const index = Math.floor(rng() * situations.length);
+  const selected = situations[index];
+
+  questions.push({
+    id: `riscv-cache-doorloop-${index}`,
+    title: 'Cachegedrag bij geheugen-doorloop in RISC-V',
+    label: selected.label,
+    hint: 'Bedenk wat er gebeurt met een direct-mapped cache als je steeds sequentieel door het geheugen loopt.',
+    answer: selected.correctAnswer,
+    correctAnswers: [selected.correctAnswer],
+    categories: ['Caching', 'RISC-V'],
+    explanation: selected.explanation
+  });
+}
+
+
   return questions;
 }

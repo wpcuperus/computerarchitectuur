@@ -4,6 +4,7 @@ let allQuestions = [];
 function loadAllQuestions() {
   allQuestions = [
     ...generateWeek1Questions().map(q => ({ ...q, week: 'week1' })),
+    ...generateWeek1TheoryQuestions().map(q => ({ ...q, week: 'week1theorie' })),
     ...generateWeek2Questions().map(q => ({ ...q, week: 'week2' })),
     ...generateWeek2TheoryQuestions().map(q => ({ ...q, week: 'week2theorie' })),
     ...generateWeek3Questions().map(q => ({ ...q, week: 'week3' })),
@@ -86,6 +87,7 @@ function displayQuestionSelection() {
   const sortedWeeks = Object.keys(grouped).sort();
   const weekLabels = {
     week1: "Week 1: Intro en Talstelsels (sommen)",
+    week1theorie: "Week 1 - Intro en Talstelsels (theorie)",
     week2: "Week 2: Geheugenrepresentatie (sommen)",
     week2theorie: "Week 2 - Geheugenrepresentatie (theorie)",
     week3: "Week 3: Logische schakelingen (theorie)",
