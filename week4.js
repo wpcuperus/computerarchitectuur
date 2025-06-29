@@ -26,6 +26,10 @@ function encodeJAL(rd, offset) {
 function generateWeek4Questions() {
   const questions = [];
 
+    function shuffle(array) {
+    return array.map(x => ({ x, sort: rng() })).sort((a, b) => a.sort - b.sort).map(({ x }) => x);
+  }
+
   // Vraag 1: Bit in register wordt gezet
   {
     const bitPosition = Math.floor(rng() * 8); // 0 t/m 7
@@ -855,6 +859,88 @@ end:  j end
 <code>lw ${reg3}, ${offset2}(${reg1})</code> leest waarde op index ${idx2} = ${val2}.`
   });
 }
+
+// Meerkeuzevraag: RISC-V standaard
+{
+      const correct = "RISC-V is een open standaard. Elke ontwikkelaar kan een CPU ontwikkelen en uitbrengen die RISC-V implementeert."
+      const incorrect = [
+        "RISC-V is een gesloten standaard. Alleen goedgekeurde bedrijven kan een CPU ontwikkelen en uitbrengen die RISC-V implementeert.",
+        "RISC-V is een licentiestandaard. Alleen bedrijven die een licentie gekocht hebben kunnen een CPU ontwikkelen en uitbrengen die RISC-V implementeert.",
+        "RISC-V is een standaard die alleen gebruikt wordt in embedded systemen. Het is niet geschikt voor algemene computers.",
+        "RISC-V is een standaard die alleen gebruikt wordt in high-performance computing. Het is niet geschikt voor embedded systemen.",
+        "RISC-V is een standaard die alleen gebruikt wordt in mobiele apparaten. Het is niet geschikt voor servers of desktops.",
+        "RISC-V is een standaard die alleen gebruikt wordt in de academische wereld. Het is niet geschikt voor commerciële toepassingen.",
+        "RISC-V is een standaard die alleen gebruikt wordt in de gaming industrie. Het is niet geschikt voor andere toepassingen."
+      ];
+
+      const options = shuffle([
+      correct,
+      ...shuffle(incorrect).slice(0, 7)
+    ]);
+
+    const labels = "ABCDEFGH".split('');
+    const correctLabel = labels[options.indexOf(correct)];
+
+    const html = `
+<p>Welke van de onderstaande beweringen over RISC-V is waar?</p>
+<ol type="A">
+  ${options.map(option => `<li>${option}</li>`).join('')}
+</ol>
+<p>Typ de letter van het juiste antwoord:</p>`;
+
+    questions.push({
+      id: 'riscv-standard',
+      title: 'RISC-V Standaard',
+      label: html,
+      categories: ['RISC-V'],
+      answer: correctLabel,
+      correctAnswers: [correctLabel],
+      hint: `Denk na over de aard van RISC-V en hoe het zich verhoudt tot andere CPU-architecturen.`,
+      explanation: `RISC-V is een open standaard, wat betekent dat iedereen vrij is om een CPU te ontwikkelen die deze standaard implementeert. Dit bevordert innovatie en samenwerking in de industrie.`
+    });
+  }
+  // Meerkeuzevraag: Beweringen over RISC-V processoren
+  {
+    const correct = "RISC betekent Reduced Instruction Set Computer";
+    const incorrect = [
+      "Caching kan niet worden toegepast omdat veel instructies langer duren dan 1 klokperiode.",
+      "Met een ADD instructie kan data vanuit het externe geheugen worden opgeteld bij de inhoud van een register.",
+      "RISC-V is een 64-bit processor, dus alle registers zijn 64 bits breed.",
+      "RISC-V is een 32-bit processor, dus alle registers zijn 32 bits breed.",
+      "Alle instructies hebben een variabele lengte.",
+      "RISC-V is alleen geschikt voor embedded systemen en niet voor algemene computers.",
+      "RISC-V is alleen geschikt voor high-performance computing en niet voor embedded systemen.",
+      "Met een SUB instructie kan data vanuit het externe geheugen worden afgetrokken van de inhoud van een register.",
+      "RISC-V is alleen geschikt voor mobiele apparaten en niet voor servers of desktops.",
+      "RISC bevat meer instructies dan CISC, waardoor het complexer is.",
+      "RISC betekent Robot Instruction Set Computer",
+      "RISC betekent Reduced Instruction Set Code",
+      "RISC betekent Real International Standard Code",
+    ];
+    const options = shuffle([
+      correct,
+      ...shuffle(incorrect).slice(0, 7)
+    ]);
+
+    const labels = "ABCDEFGH".split('');
+    const correctLabel = labels[options.indexOf(correct)];
+    const html = `
+<p>Welke van de onderstaande beweringen over RISC-V processoren is waar?</p>
+<ol type="A">
+  ${options.map(option => `<li>${option}</li>`).join('')}
+</ol>
+<p>Typ de letter van het juiste antwoord:</p>`;
+    questions.push({
+      id: 'riscv-processor-statements',
+      title: 'RISC-V Processor Beweringen',
+      label: html,
+      categories: ['RISC-V'],
+      answer: correctLabel,
+      correctAnswers: [correctLabel],
+      hint: `Denk na over de betekenis van RISC en de kenmerken van RISC-V processoren.`,
+      explanation: `RISC staat voor Reduced Instruction Set Computer, wat betekent dat RISC-V een set van eenvoudige instructies heeft die snel kunnen worden uitgevoerd.`
+    });
+  }
 
 
   return questions;

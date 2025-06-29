@@ -263,6 +263,10 @@ const feedbackTableHtml = `
 function generateWeek3Questions() {
   const questions = [];
 
+    function shuffle(array) {
+      return array.map(x => ({ x, sort: rng() })).sort((a, b) => a.sort - b.sort).map(({ x }) => x);
+      }
+
   // Logische bewerkingen
   const logicFunctions = {
     AND: (a, b) => a & b,
@@ -877,6 +881,50 @@ Bij elke rising edge wordt Q gelijk aan X. Z is 1 als Q kleiner dan of gelijk aa
     </table>
 `
   });
+}
+
+// Vraag: Decoder meerkeuzevraag
+{ 
+  const correct = `n selectorlijnen, 2^n outputlijnen van een waarde voorzien`;
+  const incorrect = [
+      "n selectorlijnen, 2^n inputlijnen van een waarde voorzien",
+      "n inputlijnen, 2^n outputlijnen van een waarde voorzien",
+      "2^n selectorlijnen, n outputlijnen van een waarde voorzien",
+      "2^n selectorlijnen, n inputlijnen van een waarde voorzien",
+      "n selectorlijnen, n outputlijnen van een waarde voorzien",
+      "n inputlijnen, n outputlijnen van een waarde voorzien",
+      "n aansturinglijnen, 2^n outputlijnen van een waarde voorzien",
+      "n aansturinglijnen, 2^n inputlijnen van een waarde voorzien"
+    ];
+
+    const options = shuffle([
+      correct,
+      ...shuffle(incorrect).slice(0, 7)
+    ]);
+
+    const labels = "ABCDEFGH".split('');
+    const correctLabel = labels[options.indexOf(correct)];
+
+    const html = `
+<p>Bij een decoder worden er aan de hand van:</p>
+<ol type="A">
+  ${options.map(option => `<li>${option}</li>`).join('')}
+</ol>
+<p>Typ de letter van je antwoord:</p>`;
+
+questions.push({
+    id: 'decoder-multiple-choice',
+    title: 'Decoder meerkeuzevraag',
+    label: html,
+    categories: ['Decoders'],
+    hint: 'Een decoder zet een binaire waarde om naar een specifieke outputlijn.',
+    explanation: `
+<p>Een decoder heeft n selectorlijnen en kan daarmee 2^n outputlijnen van een waarde voorzien.</p>
+`,
+    answer: correctLabel,
+    correctAnswers: [correctLabel],
+  });
+
 }
 
 questions.push(generateWeek3FourInputQuestion());

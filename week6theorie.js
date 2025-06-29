@@ -261,7 +261,7 @@ D: Nauwelijks tot niet.
   const selected = situations[index];
 
   questions.push({
-    id: `riscv-cache-doorloop-${index}`,
+    id: `riscv-cache-doorloop`,
     title: 'Cachegedrag bij geheugen-doorloop in RISC-V',
     label: selected.label,
     hint: 'Bedenk wat er gebeurt met een direct-mapped cache als je steeds sequentieel door het geheugen loopt.',
@@ -269,6 +269,57 @@ D: Nauwelijks tot niet.
     correctAnswers: [selected.correctAnswer],
     categories: ['Caching', 'RISC-V'],
     explanation: selected.explanation
+  });
+}
+
+// Vraag 6: Waarvoor staat de term IR als het gaat om een CPU?
+{
+  questions.push({
+    id: 'ir-term-cpu',
+    title: 'De betekenis van IR in een CPU',
+    label: `<p>Waarvoor staat de term IR in de context van een CPU?</p>`,
+    hint: 'Denk aan de rol van IR in het uitvoeren van instructies.',
+    answer: 'Instruction Register',
+    correctAnswers: ['Instruction Register'],
+    categories: ['Datapath'],
+    explanation: `IR staat voor Instruction Register. Het is een register in de CPU dat de huidige instructie bevat die wordt uitgevoerd.`
+  });
+}
+
+// Vraag 7: Tristate schakelingen gebruiken
+{
+  const correct = "Voor het koppelen van geheugencellen aan de databus.";
+  const incorrect = [
+    "Voor het uitvoeren van rekenkundige bewerkingen",
+    "Voor het synchroniseren van de kloksignalen",
+    "Voor het decoderen van instructies",
+    "Voor het beheren van de stroomvoorziening",
+    "Voor het renderen van grafische beelden",
+    "Voor het opslaan van tijdelijke gegevens",
+    "Voor het controleren van fouten in dataoverdracht",
+    "Voor het onderhouden van netwerkverbindingen",
+    "Voor het uitvoeren van besturingssysteemfuncties",
+    "Voor het beheren van gebruikersinvoer"
+  ];
+  const options = shuffle([
+    correct,
+    ...shuffle(incorrect).slice(0, 7)
+  ]);
+  const labels = "ABCDEFGH".split('');
+  const correctLabel = labels[options.indexOf(correct)];
+  const html = `
+<p><strong>Waarom worden tristate schakelingen gebruikt in computersystemen?</strong></p>
+<ol type="A">
+  ${options.map(option => `<li>${option}</li>`).join('')}
+</ol>
+<p>Typ de letter van je antwoord:</p>`;
+  questions.push({
+    title: 'Tristate schakelingen',
+    label: html,
+    answer: correctLabel,
+    categories: ['Datapath'],
+    correctAnswers: [correctLabel],
+    explanation: `Tristate schakelingen worden gebruikt om meerdere geheugencellen aan dezelfde databus te koppelen zonder dat er conflicten ontstaan. Ze kunnen in drie toestanden werken: hoog, laag en hoog-impedantie (uit).`
   });
 }
 
